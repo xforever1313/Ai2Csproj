@@ -40,30 +40,48 @@ namespace Ai2Csproj
         public SupportedAssemblyAttributes TypesToLeave { get; init; }
 
         // ---------------- Functions ----------------
-    }
 
-    internal static class Ai2CsprojConfigExtensions
-    {
-        public static void Validate( this Ai2CsprojConfig config )
+        public void Validate()
         {
             var errors = new List<string>();
 
-            if( config.CsProjPath.Exists == false )
+            if( this.CsProjPath.Exists == false )
             {
-                errors.Add( $"{config.CsProjPath.FullName} does not exist!" );
+                errors.Add( $"{this.CsProjPath.FullName} does not exist!" );
             }
 
-            if( config.AssmblyInfoPath.Exists == false )
+            if( this.AssmblyInfoPath.Exists == false )
             {
-                errors.Add( $"{config.AssmblyInfoPath.FullName} does not exist!" );
+                errors.Add( $"{this.AssmblyInfoPath.FullName} does not exist!" );
             }
 
             if( errors.Any() )
             {
                 throw new ListedValidationException(
-                    "Errors when validating arguments",
+                    "Errors when validating configuration",
                     errors
                 );
+            }
+        }
+
+        public MigrationBehavior GetMigrationBehavior( SupportedAssemblyAttributes attribute )
+        {
+            if( ( attribute & this.TypesToMigrate ) == attribute )
+            {
+                return MigrationBehavior.migrate;
+            }
+            else if( ( attribute & this.TypesToLeave ) == attribute )
+            {
+                return MigrationBehavior.leave;
+            }
+            else if( ( attribute & this.TypesToDelete ) == attribute )
+            {
+                return MigrationBehavior.delete;
+            }
+            else
+            {
+                // Assume migrate is the default.
+                return MigrationBehavior.migrate;
             }
         }
     }
