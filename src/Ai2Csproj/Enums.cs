@@ -13,33 +13,27 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace Ai2Csproj
 {
-    internal enum AssemblyAttributeOption
+    internal enum MigrationBehavior
     {
         /// <summary>
         /// Migrate the assembly attribute over from the AssemblyInfo
         /// file to the csproj.
         /// </summary>
-        Migrate,
+        migrate,
 
         /// <summary>
         /// Deletes the given assembly attribute from the AssemblyInfo
         /// file and does not add it to the csproj.
         /// </summary>
-        Delete,
+        delete,
 
         /// <summary>
         /// Leaves the given assembly attribute alone, and it remains
         /// inside of the AssemblyInfo file.
         /// </summary>
-        Leave
+        leave
     }
 
     [Flags]

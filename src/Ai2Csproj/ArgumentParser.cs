@@ -82,6 +82,37 @@ namespace Ai2Csproj
                     v => this.Config = this.Config with { MigrateUnsupportedTypes = v is not null }
                 }
             };
+            
+            foreach( SupportedAssemblyAttributes supportedAttribute in Enum.GetValues<SupportedAssemblyAttributes>() )
+            {
+                optionSet.Add(
+                    $"{supportedAttribute}_behavior=",
+                    $"How to handle '{AssemblyAttributeMapping.GetType( supportedAttribute ).FullName}'.  " +
+                    $"{MigrationBehavior.migrate} (default) - migrate to csproj.  {MigrationBehavior.delete} - remove from AssemblyInfo do not put in csproj.  " +
+                    $"{MigrationBehavior.leave} - leave in the AssemblyInfo file",
+                    ( string value ) =>
+                    {
+                        if( Enum.TryParse( value, out MigrationBehavior migrateBehavior ) == false )
+                        {
+                            throw new ArgumentException(
+                                $"Unknown value for behavior attribute: {value}"
+                            );
+                        }
+                        else if( migrateBehavior == MigrationBehavior.migrate )
+                        {
+                            this.Config = this.Config with { TypesToMigrate = Config.TypesToMigrate | supportedAttribute };
+                        }
+                        else if( migrateBehavior == MigrationBehavior.delete )
+                        {
+                            this.Config = this.Config with { TypesToDelete = Config.TypesToDelete | supportedAttribute };
+                        }
+                        else if( migrateBehavior == MigrationBehavior.leave )
+                        {
+                            this.Config = this.Config with { TypesToLeave = Config.TypesToLeave | supportedAttribute };
+                        }
+                    }
+                );
+            }
         }
 
         // ---------------- Properties ----------------

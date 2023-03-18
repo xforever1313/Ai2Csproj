@@ -24,7 +24,7 @@ namespace Ai2Csproj
     /// <summary>
     /// Maps assembly attributes to their equivalent csproj values.
     /// </summary>
-    public static class AssemblyAttributeMapping
+    internal static class AssemblyAttributeMapping
     {
         // ---------------- Fields ----------------
 
@@ -79,6 +79,11 @@ namespace Ai2Csproj
         }
 
         // ---------------- Functions ----------------
+
+        public static Type GetType( SupportedAssemblyAttributes attribute )
+        {
+            return supportedAssembliesMapping[attribute];
+        }
 
         public static IEnumerable<Type> GetSupportedTypes()
         {

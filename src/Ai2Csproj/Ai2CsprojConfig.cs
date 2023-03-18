@@ -32,6 +32,14 @@ namespace Ai2Csproj
         public bool DeleteOldAssemblyInfo { get; init; } = false;
 
         public bool MigrateUnsupportedTypes { get; init; } = false;
+
+        public SupportedAssemblyAttributes TypesToDelete { get; init; }
+
+        public SupportedAssemblyAttributes TypesToMigrate { get; init; }
+
+        public SupportedAssemblyAttributes TypesToLeave { get; init; }
+
+        // ---------------- Functions ----------------
     }
 
     internal static class Ai2CsprojConfigExtensions
