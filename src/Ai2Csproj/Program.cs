@@ -13,5 +13,86 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-// See https://aka.ms/new-console-template for more information
-Console.WriteLine("Hello, World!");
+using Ai2Csproj;
+using Mono.Options;
+using SethCS.Exceptions;
+
+internal class Program
+{
+    private static int Main( string[] args )
+    {
+        try
+        {
+            Ai2CsprojConfig config;
+            {
+                var argParser = new ArgumentParser();
+                argParser.Parse( args );
+
+                if( argParser.ShowHelp )
+                {
+                    argParser.WriteHelp( Console.Out );
+                    return 0;
+                }
+                else if( argParser.ShowCredits )
+                {
+                    PrintCredits();
+                    return 0;
+                }
+                else if( argParser.ShowLicense )
+                {
+                    PrintLicense();
+                    return 0;
+                }
+                else if( argParser.ShowVersion )
+                {
+                    PrintVersion();
+                    return 0;
+                }
+
+                config = argParser.Config;
+            }
+
+            Run( config );
+
+            return 0;
+        }
+        catch( OptionException e )
+        {
+            Console.WriteLine( "Error when parsing options:" );
+            Console.WriteLine( e );
+            return 1;
+        }
+        catch( ListedValidationException e )
+        {
+            Console.WriteLine( "Error when validating options:" );
+            Console.WriteLine( e );
+            return 2;
+        }
+        catch( Exception e )
+        {
+            Console.WriteLine( "FATAL ERROR:" );
+            Console.WriteLine( e );
+            return -1;
+        }
+    }
+
+    private static void Run( Ai2CsprojConfig config )
+    {
+        config.Validate();
+    }
+
+    private static void PrintVersion()
+    {
+        Console.WriteLine(
+            typeof( Program ).Assembly.GetName().Version?.ToString( 3 ) ?? "Unknown Version"
+        );
+    }
+
+    private static void PrintLicense()
+    {
+    }
+
+    private static void PrintCredits()
+    {
+    }
+}
