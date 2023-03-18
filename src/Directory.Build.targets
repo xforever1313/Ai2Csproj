@@ -1,0 +1,7 @@
+<Project>
+  <Import Project="$(MSBuildThisFileDirectory)\..\SethCS\Directory.Build.targets"/>
+  
+  <ItemGroup>
+    <PackageReference Update="Mono.Options" Version="6.12.0.148" />
+  </ItemGroup>
+</Project>
