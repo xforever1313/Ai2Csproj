@@ -30,6 +30,8 @@ namespace Ai2Csproj
         );
 
         public bool DeleteOldAssemblyInfo { get; init; } = false;
+
+        public bool MigrateUnsupportedTypes { get; init; } = false;
     }
 
     internal static class Ai2CsprojConfigExtensions

@@ -55,6 +55,11 @@ namespace Ai2Csproj
                     "Prints the third-party notices and credits.",
                     v => this.ShowCredits = ( v is not null )
                 },
+                {
+                    "list_supported_types",
+                    "Prints a list of the supported AssemblyAttributes that can be migrated",
+                    v => this.ShowSupportedTypes = ( v is not null )
+                },
 
                 {
                     "project_path=",
@@ -68,8 +73,13 @@ namespace Ai2Csproj
                 },
                 {
                     "delete_old_assembly_info",
-                    "If specified, the old AssemblyInfo.cs file will be deleted if there is nothing else remaining inside of it.  Defaulted to false.",
+                    "If specified, the old AssemblyInfo.cs file will be deleted if there is nothing else remaining inside of it.",
                     v => this.Config = this.Config with { DeleteOldAssemblyInfo = v is not null }
+                },
+                {
+                    "migrate_unsupported_types",
+                    "If specified, unsupported types will be attempted to migrated by using the 'AssemblyAttribute' XML element.",
+                    v => this.Config = this.Config with { MigrateUnsupportedTypes = v is not null }
                 }
             };
         }
@@ -83,6 +93,8 @@ namespace Ai2Csproj
         public bool ShowLicense { get; private set; }
 
         public bool ShowCredits { get; private set; }
+
+        public bool ShowSupportedTypes { get; private set; }
 
         public Ai2CsprojConfig Config { get; private set; }
 

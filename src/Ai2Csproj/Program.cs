@@ -48,6 +48,11 @@ internal class Program
                     PrintVersion();
                     return 0;
                 }
+                else if( argParser.ShowSupportedTypes )
+                {
+                    PrintSupportedTypes();
+                    return 0;
+                }
 
                 config = argParser.Config;
             }
@@ -86,6 +91,18 @@ internal class Program
         Console.WriteLine(
             typeof( Program ).Assembly.GetName().Version?.ToString( 3 ) ?? "Unknown Version"
         );
+    }
+
+    private static void PrintSupportedTypes()
+    {
+        Console.WriteLine( "Supported Types:" );
+        foreach( Type type in AssemblyAttributeMapping.GetSupportedTypes() )
+        {
+            Console.WriteLine( $"\t- {type.FullName}" );
+        }
+        Console.WriteLine();
+        Console.WriteLine( "Note: This doesn't mean unsupported assembly attributes can't be migrated." );
+        Console.WriteLine( "By specifying '--migrate_unsupported_types', an *attempt* can be made to migrate them and add to the csproj." );
     }
 
     private static void PrintLicense()

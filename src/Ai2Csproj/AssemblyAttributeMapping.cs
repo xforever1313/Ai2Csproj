@@ -16,6 +16,8 @@
 using System.Collections.ObjectModel;
 using System.Reflection;
 using System.Resources;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 namespace Ai2Csproj
 {
@@ -28,29 +30,59 @@ namespace Ai2Csproj
 
         private static readonly IReadOnlyDictionary<Type, string> attributeToXmlMapping;
 
+        private static readonly IReadOnlyDictionary<SupportedAssemblyAttributes, Type> supportedAssembliesMapping;
+
         // ---------------- Constructor ----------------
 
         static AssemblyAttributeMapping()
         {
-            var dict = new Dictionary<Type, string>
             {
-                // Taken from here:
-                // https://learn.microsoft.com/en-us/dotnet/core/project-sdk/msbuild-props#assembly-attribute-properties
-                [typeof( AssemblyCompanyAttribute )] = "Company",
-                [typeof( AssemblyConfigurationAttribute )] = "Configuration",
-                [typeof( AssemblyCopyrightAttribute )] = "Copyright",
-                [typeof( AssemblyDescriptionAttribute )] = "Description",
-                [typeof( AssemblyFileVersionAttribute )] = "FileVersion",
-                [typeof( AssemblyInformationalVersionAttribute )] = "InformationalVersion",
-                [typeof( AssemblyProductAttribute )] = "Product",
-                [typeof( AssemblyTitleAttribute )] = "AssemblyTitle",
-                [typeof( AssemblyVersionAttribute )] = "AssemblyVersion",
-                [typeof( NeutralResourcesLanguageAttribute )] = "NeutralLanguage"
-            };
+                var dict = new Dictionary<Type, string>
+                {
+                    // Taken from here:
+                    // https://learn.microsoft.com/en-us/dotnet/core/project-sdk/msbuild-props#assembly-attribute-properties
+                    [typeof( AssemblyCompanyAttribute )] = "Company",
+                    [typeof( AssemblyConfigurationAttribute )] = "Configuration",
+                    [typeof( AssemblyCopyrightAttribute )] = "Copyright",
+                    [typeof( AssemblyDescriptionAttribute )] = "Description",
+                    [typeof( AssemblyFileVersionAttribute )] = "FileVersion",
+                    [typeof( AssemblyInformationalVersionAttribute )] = "InformationalVersion",
+                    [typeof( AssemblyProductAttribute )] = "Product",
+                    [typeof( AssemblyTitleAttribute )] = "AssemblyTitle",
+                    [typeof( AssemblyVersionAttribute )] = "AssemblyVersion",
+                    [typeof( NeutralResourcesLanguageAttribute )] = "NeutralLanguage"
+                };
 
-            attributeToXmlMapping = new ReadOnlyDictionary<Type, string>( dict );
+                attributeToXmlMapping = new ReadOnlyDictionary<Type, string>( dict );
+            }
+
+            {
+                var dict = new Dictionary<SupportedAssemblyAttributes, Type>
+                {
+                    [SupportedAssemblyAttributes.assembly_company] = typeof( AssemblyCompanyAttribute ),
+                    [SupportedAssemblyAttributes.assembly_configuration] = typeof( AssemblyConfigurationAttribute ),
+                    [SupportedAssemblyAttributes.assembly_copyright] = typeof( AssemblyCopyrightAttribute ),
+                    [SupportedAssemblyAttributes.assembly_description] = typeof( AssemblyDescriptionAttribute ),
+                    [SupportedAssemblyAttributes.assembly_file_version] = typeof( AssemblyFileVersionAttribute ),
+                    [SupportedAssemblyAttributes.assembly_informational_version] = typeof( AssemblyInformationalVersionAttribute ),
+                    [SupportedAssemblyAttributes.assembly_product] = typeof( AssemblyProductAttribute ),
+                    [SupportedAssemblyAttributes.assembly_Title] = typeof( AssemblyTitleAttribute ),
+                    [SupportedAssemblyAttributes.assembly_version] = typeof( AssemblyVersionAttribute ),
+                    [SupportedAssemblyAttributes.neutral_resources_language] = typeof( NeutralResourcesLanguageAttribute ),
+
+                    [SupportedAssemblyAttributes.internals_visible_to] = typeof( InternalsVisibleToAttribute ),
+                    [SupportedAssemblyAttributes.com_visible] = typeof( ComVisibleAttribute )
+                };
+
+                supportedAssembliesMapping = new ReadOnlyDictionary<SupportedAssemblyAttributes, Type>( dict );
+            }
         }
 
         // ---------------- Functions ----------------
+
+        public static IEnumerable<Type> GetSupportedTypes()
+        {
+            return supportedAssembliesMapping.Values;
+        }
     }
 }
