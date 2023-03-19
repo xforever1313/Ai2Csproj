@@ -70,10 +70,10 @@ namespace Ai2Csproj
                     [SupportedAssemblyAttributes.assembly_version] = typeof( AssemblyVersionAttribute ),
                     [SupportedAssemblyAttributes.neutral_resources_language] = typeof( NeutralResourcesLanguageAttribute ),
 
+                    [SupportedAssemblyAttributes.assembly_trademark] = typeof( AssemblyTrademarkAttribute ),
                     [SupportedAssemblyAttributes.internals_visible_to] = typeof( InternalsVisibleToAttribute ),
                     [SupportedAssemblyAttributes.com_visible] = typeof( ComVisibleAttribute ),
-                    [SupportedAssemblyAttributes.assembly_trademark] = typeof( AssemblyTrademarkAttribute ),
-                    [SupportedAssemblyAttributes.cls_compliant] = typeof( CLSCompliantAttribute )
+                    [SupportedAssemblyAttributes.cls_compliant] = typeof( CLSCompliantAttribute ),
                 };
 
                 supportedAssembliesMapping = new ReadOnlyDictionary<SupportedAssemblyAttributes, Type>( dict );

@@ -189,7 +189,7 @@ namespace Ai2Csproj
                 return originalCsProjContents;
             }
 
-            XDocument csproj = XDocument.Load( originalCsProjContents );
+            XDocument csproj = XDocument.Parse( originalCsProjContents );
             XElement? root = csproj.Root;
             if( root is null )
             {
@@ -252,7 +252,7 @@ namespace Ai2Csproj
                 }
             }
 
-            return csproj.ToString( SaveOptions.DisableFormatting );
+            return csproj.ToString( SaveOptions.None );
         }
 
         private void BackupFile( FileInfo fileInfo )

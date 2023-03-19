@@ -13,13 +13,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace Ai2Csproj.Tests
 {
@@ -82,12 +76,78 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyVersion( ""{defaultVersion}"" )]
 [assembly: NeutralResourcesLanguage( ""{defaultLanguage}"" )]
 
+[assembly: AssemblyTrademark( ""{defaultTrademark}"" )]
 [assembly: InternalsVisibleTo( ""{defaultInternals1}"" ),InternalsVisibleTo( ""{defaultInternals2}"" )]
 [assembly:ComVisible( {defaultComVisible} )]
-[assembly: AssemblyTrademark( ""{defaultTrademark}"" )]
 [assembly:CLSCompliant( {defaultCls} )]
 ";
         // ---------------- Tests ----------------
+
+        [TestMethod]
+        public void MigrateAllAttributesTest()
+        {
+            string expectedCsProj =
+$@"<Project Sdk=""Microsoft.NET.Sdk"">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+  <PropertyGroup>
+    <Company>{defaultCompany}</Company>
+    <Configuration>{defaultConfiguration}</Configuration>
+    <Copyright>{defaultCopyRight}</Copyright>
+    <Description>{defaultDescription}</Description>
+    <FileVersion>{defaultFileVersion}</FileVersion>
+    <InformationalVersion>{defaultInfoVersion}</InformationalVersion>
+    <Product>{defaultProduct}</Product>
+    <AssemblyTitle>{defaultTitle}</AssemblyTitle>
+    <AssemblyVersion>{defaultVersion}</AssemblyVersion>
+    <NeutralLanguage>{defaultLanguage}</NeutralLanguage>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include=""Microsoft.CodeAnalysis.CSharp"" />
+    <PackageReference Include=""Mono.Options"" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include=""..\..\SethCS\LibSethCS\LibSethCS.csproj"" />
+  </ItemGroup>
+  <ItemGroup>
+    <AssemblyAttribute Include=""System.Reflection.AssemblyTrademarkAttribute"">
+        <_Parameter1>{defaultTrademark}</_Parameter1>
+    </AssemblyAttribute>
+    <AssemblyAttribute Include=""System.Runtime.CompilerServices.InternalsVisibleToAttribute"">
+        <_Parameter1>{defaultInternals1}</_Parameter1>
+    </AssemblyAttribute>
+    <AssemblyAttribute Include=""System.Runtime.CompilerServices.InternalsVisibleToAttribute"">
+        <_Parameter1>{defaultInternals2}</_Parameter1>
+    </AssemblyAttribute>
+    <AssemblyAttribute Include=""System.Runtime.InteropServices.ComVisibleAttribute"">
+        <_Parameter1>{defaultComVisible}</_Parameter1>
+    </AssemblyAttribute>
+    <AssemblyAttribute Include=""System.CLSCompliantAttribute"">
+        <_Parameter1>{defaultCls}</_Parameter1>
+    </AssemblyAttribute>
+  </ItemGroup>
+</Project>";
+
+            // Setup
+            var config = new Ai2CsprojConfig
+            {
+                // Default should be to migrate all.
+                DeleteOldAssemblyInfo = true
+            };
+
+            // Act / Check
+            DoMigrationTest(
+                config,
+                defaultStartingCsProj,
+                defaultStartingAssemblyInfo,
+                expectedCsProj,
+                ""
+            );
+        }
 
         // -------- Delete Tests --------
 
@@ -139,7 +199,10 @@ using System.Runtime.InteropServices;
             var uut = new Migrator( config );
             MigrationResult result = uut.Migrate( startingCsProj, startingAssemblyInfo );
 
-            Assert.AreEqual( expectedCsProj, result.CsprojContents );
+            XDocument expectedCsProjXml = XDocument.Parse( expectedCsProj );
+            XDocument actualCsProjXml = XDocument.Parse( result.CsprojContents );
+
+            Assert.AreEqual( expectedCsProjXml.ToString(), actualCsProjXml.ToString() );
             Assert.AreEqual( expectedAssemblyInfo, result.AssemblyInfoContents );
         }
 
