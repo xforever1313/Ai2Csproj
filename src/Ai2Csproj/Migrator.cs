@@ -13,6 +13,9 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+
 namespace Ai2Csproj
 {
     internal class Migrator
@@ -38,17 +41,19 @@ namespace Ai2Csproj
 
         public MigrationResult Migrate()
         {
-            using var csProjStream = new FileStream( this.csProjFile.FullName, FileMode.Open, FileAccess.Read );
-            using var assemblyInfoStream = new FileStream( this.csProjFile.FullName, FileMode.Open, FileAccess.Read );
+            string csProjContents = File.ReadAllText( this.csProjFile.FullName );
+            string assemblyInfoContents = File.ReadAllText( this.assemblyInfoFile.FullName );
 
-            return Migrate( csProjStream, assemblyInfoStream );
+            return Migrate( csProjContents, assemblyInfoContents );
         }
 
         /// <remarks>
         /// Internal so unit tests can snag this.
         /// </remarks>
-        internal static MigrationResult Migrate( Stream csProjStream, Stream assemblyInfoStream )
+        internal MigrationResult Migrate( string csProjContents, string assemblyInfoContents )
         {
+            SyntaxTree syntaxTree = CSharpSyntaxTree.ParseText( assemblyInfoContents );
+
             return new MigrationResult( "", "" );
         }
 

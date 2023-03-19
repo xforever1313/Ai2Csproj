@@ -61,6 +61,10 @@ namespace Ai2Csproj
 
         internals_visible_to = ( 2L << 11 ),
 
-        com_visible = ( 2L << 12 )
+        com_visible = ( 2L << 12 ),
+
+        assembly_trademark = ( 2L << 13 ),
+
+        cls_compliant = ( 2L << 14 )
     }
 }

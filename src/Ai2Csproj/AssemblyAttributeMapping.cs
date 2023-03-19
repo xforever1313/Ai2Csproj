@@ -71,7 +71,9 @@ namespace Ai2Csproj
                     [SupportedAssemblyAttributes.neutral_resources_language] = typeof( NeutralResourcesLanguageAttribute ),
 
                     [SupportedAssemblyAttributes.internals_visible_to] = typeof( InternalsVisibleToAttribute ),
-                    [SupportedAssemblyAttributes.com_visible] = typeof( ComVisibleAttribute )
+                    [SupportedAssemblyAttributes.com_visible] = typeof( ComVisibleAttribute ),
+                    [SupportedAssemblyAttributes.assembly_trademark] = typeof( AssemblyTrademarkAttribute ),
+                    [SupportedAssemblyAttributes.cls_compliant] = typeof( CLSCompliantAttribute )
                 };
 
                 supportedAssembliesMapping = new ReadOnlyDictionary<SupportedAssemblyAttributes, Type>( dict );
@@ -79,6 +81,24 @@ namespace Ai2Csproj
         }
 
         // ---------------- Functions ----------------
+
+        /// <summary>
+        /// Tries to get the PropertyGroupName of the given attribute,
+        /// if one exists.  If this returns not-null,
+        /// then the type should go in the PropertyGroup element
+        /// whose name is the returned type.
+        /// 
+        /// Otherwise, this goes in an ItemGroup.
+        /// </summary>
+        public static string? TryGetPropertyGroupName( Type type )
+        {
+            if( attributeToXmlMapping.ContainsKey( type ) )
+            {
+                return attributeToXmlMapping[type];
+            }
+
+            return null;
+        }
 
         public static Type GetType( SupportedAssemblyAttributes attribute )
         {
@@ -88,6 +108,36 @@ namespace Ai2Csproj
         public static IEnumerable<Type> GetSupportedTypes()
         {
             return supportedAssembliesMapping.Values;
+        }
+
+        public static bool IsMultiplePerAssemblyAllowed( Type type )
+        {
+            if( type.Equals( typeof( InternalsVisibleToAttribute ) ) )
+            {
+                return true;
+            }
+            else if( supportedAssembliesMapping.Values.Contains( type ) )
+            {
+                // All other supported assemblies (to our knowledge)
+                // allow just one declaration per assembly.
+                return false;
+            }
+
+            // Assume its a user type, and we just don't know.
+            // Assume its allowed.
+            return true;
+        }
+
+        public static bool IsOnlyOneParameterAllowed( Type type )
+        {
+            // All of our known attributes only allow one paramter.
+            // *Technically*, NeutralResourcesLanguageAttribute has a Constructor
+            // with 2 parameters, but it probably won't work at compile time
+            // since its an interface.
+            //
+            // All other types, we can't make assumptions, assume they're allowed
+            // any number of parameters.
+            return supportedAssembliesMapping.Values.Contains( type );
         }
     }
 }

@@ -64,13 +64,18 @@ internal class Program
         catch( OptionException e )
         {
             Console.WriteLine( "Error when parsing options:" );
-            Console.WriteLine( e );
+            Console.WriteLine( e.ToString() );
             return 1;
+        }
+        catch( SyntaxTreeParseException e )
+        {
+            Console.WriteLine( e.Message );
+            return 5;
         }
         catch( ListedValidationException e )
         {
             Console.WriteLine( "Error when validating options:" );
-            Console.WriteLine( e );
+            Console.WriteLine( e.Message );
             return 2;
         }
         catch( Exception e )
