@@ -13,6 +13,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+using System;
 using System.Collections.Immutable;
 using System.Xml.Linq;
 
@@ -24,6 +25,7 @@ namespace Ai2Csproj
 
         private readonly HashSet<Type> existingTypes;
         private readonly List<Tuple<Type, ImmutableArray<string>>> assemblyAttributes;
+        private readonly List<Tuple<string, ImmutableArray<string>>> unsupportedAssemblyAttributes;
 
         private readonly List<string> errors;
 
@@ -33,12 +35,13 @@ namespace Ai2Csproj
         {
             this.existingTypes = new HashSet<Type>();
             this.assemblyAttributes = new List<Tuple<Type, ImmutableArray<string>>>();
+            this.unsupportedAssemblyAttributes = new List<Tuple<string, ImmutableArray<string>>>();
             this.errors = new List<string>();
         }
 
         // ---------------- Functions ----------------
 
-        public void AddType( Type type, IEnumerable<string> parameters )
+        public void AddSupportedType( Type type, IEnumerable<string> parameters )
         {
             if( AssemblyAttributeMapping.IsMultiplePerAssemblyAllowed( type ) == false )
             {
@@ -64,6 +67,16 @@ namespace Ai2Csproj
             );
 
             this.assemblyAttributes.Add( tuple );
+        }
+
+        public void AddUnsupportedType( string type, IEnumerable<string> parameters )
+        {
+            var tuple = new Tuple<string, ImmutableArray<string>>(
+                type,
+                parameters.ToImmutableArray()
+            );
+
+            this.unsupportedAssemblyAttributes.Add( tuple );
         }
 
         public void ThrowIfErrors()
@@ -101,19 +114,13 @@ namespace Ai2Csproj
 
         public XElement? GetItemGroupXml()
         {
-            var element = new XElement( "ItemGroup" );
+            XElement element = new XElement( "ItemGroup" );
 
-            foreach( var attribute in this.assemblyAttributes )
+            void AddElement( string? typeName, IEnumerable<string> parameters )
             {
-                string? propertyGroupName = AssemblyAttributeMapping.TryGetPropertyGroupName( attribute.Item1 );
-                if( propertyGroupName is not null )
-                {
-                    continue;
-                }
-
                 var attributeElement = new XElement( "AssemblyAttribute" );
                 int i = 1;
-                foreach( string parameter in attribute.Item2 )
+                foreach( string parameter in parameters )
                 {
                     var parameterElement = new XElement(
                         $"_Parameter{i}",
@@ -123,7 +130,6 @@ namespace Ai2Csproj
                     attributeElement.Add( parameterElement );
                 }
 
-                string? typeName = attribute.Item1.FullName;
                 if( typeName is not null )
                 {
                     attributeElement.Add(
@@ -132,6 +138,22 @@ namespace Ai2Csproj
                 }
 
                 element.Add( attributeElement );
+            }
+
+            foreach( var attribute in this.assemblyAttributes )
+            {
+                string? propertyGroupName = AssemblyAttributeMapping.TryGetPropertyGroupName( attribute.Item1 );
+                if( propertyGroupName is not null )
+                {
+                    continue;
+                }
+
+                AddElement( attribute.Item1.FullName, attribute.Item2 );
+            }
+
+            foreach( var attribute in this.unsupportedAssemblyAttributes )
+            {
+                AddElement( attribute.Item1, attribute.Item2 );
             }
 
             if( element.HasElements == false )

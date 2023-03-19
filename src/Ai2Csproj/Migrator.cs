@@ -67,10 +67,6 @@ namespace Ai2Csproj
                 {
                     string name = attributes.Name.ToString();
                     Type? type = AssemblyAttributeMapping.TryGetTypeFromName( name );
-                    if( type is null )
-                    {
-                        continue;
-                    }
 
                     var attributeParameters = new List<string>();
                     AttributeArgumentListSyntax? attributeArgSyntax = attributes.ArgumentList;
@@ -92,26 +88,36 @@ namespace Ai2Csproj
                         }
                     }
 
-                    SupportedAssemblyAttributes? supportedAssembly = AssemblyAttributeMapping.TryGetAssemblyAttributeFromType( type );
-                    if( supportedAssembly is null )
+                    if( type is null )
                     {
-                        throw new InvalidOperationException(
-                            $"Could not find a supported assembly attribute from type: {type}"
-                        );
+                        if( this.config.MigrateUnsupportedTypes )
+                        {
+                            model.AddUnsupportedType( name, attributeParameters );
+                        }
                     }
-
-                    MigrationBehavior behavior = this.config.GetMigrationBehavior( supportedAssembly.Value );
-                    if( behavior == MigrationBehavior.migrate )
+                    else
                     {
-                        model.AddType( type, attributeParameters );
-                    }
+                        SupportedAssemblyAttributes? supportedAssembly = AssemblyAttributeMapping.TryGetAssemblyAttributeFromType( type );
+                        if( supportedAssembly is null )
+                        {
+                            throw new InvalidOperationException(
+                                $"Could not find a supported assembly attribute from type: {type}"
+                            );
+                        }
 
-                    if(
-                        ( behavior == MigrationBehavior.migrate ) ||
-                        ( behavior == MigrationBehavior.delete )
-                    )
-                    {
-                        attributesToDelete.Add( attributes );
+                        MigrationBehavior behavior = this.config.GetMigrationBehavior( supportedAssembly.Value );
+                        if( behavior == MigrationBehavior.migrate )
+                        {
+                            model.AddSupportedType( type, attributeParameters );
+                        }
+
+                        if(
+                            ( behavior == MigrationBehavior.migrate ) ||
+                            ( behavior == MigrationBehavior.delete )
+                        )
+                        {
+                            attributesToDelete.Add( attributes );
+                        }
                     }
                 }
             }
