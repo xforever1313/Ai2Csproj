@@ -66,8 +66,7 @@ $@"<Project Sdk=""Microsoft.NET.Sdk"">
 </Project>
 ";
         private static readonly string defaultStartingAssemblyInfo =
-$@"// Some License Text
-using System.Reflection;
+$@"using System.Reflection;
 using System.Resources;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -83,9 +82,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyVersion( ""{defaultVersion}"" )]
 [assembly: NeutralResourcesLanguage( ""{defaultLanguage}"" )]
 
-[assembly: InternalsVisibleTo( ""{defaultInternals1}"" ),
-           InternalsVisibleTo( ""{defaultInternals2}"" )
-]
+[assembly: InternalsVisibleTo( ""{defaultInternals1}"" ),InternalsVisibleTo( ""{defaultInternals2}"" )]
 [assembly:ComVisible( {defaultComVisible} )]
 [assembly: AssemblyTrademark( ""{defaultTrademark}"" )]
 [assembly:CLSCompliant( {defaultCls} )]
@@ -99,6 +96,7 @@ using System.Runtime.InteropServices;
         {
             // Setup
             var config = GetConfigWithAllDeleted( null );
+            config = config with { DeleteOldAssemblyInfo = true };
 
             // Act / Check
             DoMigrationTest(

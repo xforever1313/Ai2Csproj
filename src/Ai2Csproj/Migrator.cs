@@ -59,10 +59,11 @@ namespace Ai2Csproj
             SyntaxTree syntaxTree = CSharpSyntaxTree.ParseText( assemblyInfoContents );
             CompilationUnitSyntax root = syntaxTree.GetCompilationUnitRoot();
 
-            var attributesToDelete = new HashSet<AttributeSyntax>();
+            var attributeListsToKeep = new SyntaxList<AttributeListSyntax>();
 
             foreach( AttributeListSyntax attributeList in root.AttributeLists )
             {
+                var attributesToKeep = new SeparatedSyntaxList<AttributeSyntax>();
                 foreach( AttributeSyntax attributes in attributeList.Attributes )
                 {
                     string name = attributes.Name.ToString();
@@ -112,30 +113,47 @@ namespace Ai2Csproj
                         }
 
                         if(
-                            ( behavior == MigrationBehavior.migrate ) ||
-                            ( behavior == MigrationBehavior.delete )
+                            ( behavior != MigrationBehavior.migrate ) &&
+                            ( behavior != MigrationBehavior.delete )
                         )
                         {
-                            attributesToDelete.Add( attributes );
+                            attributesToKeep = attributesToKeep.Add( attributes );
                         }
                     }
                 }
+
+                if( attributesToKeep.Any())
+                {
+                    var newAttributeList = attributeList.WithAttributes( attributesToKeep );
+                    attributeListsToKeep = attributeListsToKeep.Add( newAttributeList );
+                }
             }
+
+            root = root.WithAttributeLists( attributeListsToKeep );
 
             // If we contain anything other than using statements
             // we want to keep the file as-is.
             bool safeToDelete = true;
-            foreach( SyntaxNode node in root.DescendantNodes() )
+            if( root.AttributeLists.Any() )
             {
-                if( node is UsingDirectiveSyntax usingStatement )
+                safeToDelete = false;
+            }
+            else if( root.Externs.Any() )
+            {
+                safeToDelete = false;
+            }
+            else if( root.Members.Any() )
+            {
+                safeToDelete = false;
+            }
+            foreach( UsingDirectiveSyntax usingStatement in root.Usings )
+            {
+                // Do not delete if there are global using statements,
+                // as those impact the entire assembly.
+                // We'll need to keep the file instead.
+                if( usingStatement.GlobalKeyword.ValueText == "global" )
                 {
-                    // Do not delete if there are global using statements,
-                    // as those impact the entire assembly.
-                    // We'll need to keep the file instead.
-                    if( usingStatement.GlobalKeyword.IsMissing == false )
-                    {
-                        safeToDelete = false;
-                    }
+                    safeToDelete = false;
                 }
             }
 
@@ -147,9 +165,9 @@ namespace Ai2Csproj
             }
             else
             {
-                newAssemblyInfo = "?";
+                newAssemblyInfo = root.ToFullString();
             }
-            return new MigrationResult( newCsProj, newAssemblyInfo );
+            return new MigrationResult( newAssemblyInfo, newCsProj );
         }
 
         public void WriteFiles( MigrationResult result )
