@@ -21,6 +21,10 @@ namespace Ai2Csproj
     {
         // ---------------- Constructor ----------------
 
+        public bool DryRun { get; init; } = false;
+
+        public bool DeleteBackup { get; init; } = false;
+
         public FileInfo CsProjPath { get; init; } = new FileInfo(
             $"{Environment.CurrentDirectory}.csproj"
         );

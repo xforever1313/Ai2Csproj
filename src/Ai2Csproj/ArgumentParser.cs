@@ -80,6 +80,16 @@ namespace Ai2Csproj
                     "migrate_unsupported_types",
                     "If specified, unsupported types will be attempted to migrated by using the 'AssemblyAttribute' XML element.",
                     v => this.Config = this.Config with { MigrateUnsupportedTypes = v is not null }
+                },
+                {
+                    "dry_run",
+                    "If specified, no files will be changed, but instead what will happen will be printed to STDOUT.",
+                    v => this.Config = this.Config with { DryRun = v is not null }
+                },
+                {
+                    "no_backup",
+                    "If specified, backups of the files that will be changed will not be created.",
+                    v => this.Config = this.Config with { DeleteBackup = v is not null }
                 }
             };
             
