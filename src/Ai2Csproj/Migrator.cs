@@ -13,8 +13,10 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+using System.Xml.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Ai2Csproj
 {
@@ -52,9 +54,96 @@ namespace Ai2Csproj
         /// </remarks>
         internal MigrationResult Migrate( string csProjContents, string assemblyInfoContents )
         {
-            SyntaxTree syntaxTree = CSharpSyntaxTree.ParseText( assemblyInfoContents );
+            var model = new AssemblyInfoModel();
 
-            return new MigrationResult( "", "" );
+            SyntaxTree syntaxTree = CSharpSyntaxTree.ParseText( assemblyInfoContents );
+            CompilationUnitSyntax root = syntaxTree.GetCompilationUnitRoot();
+
+            var attributesToDelete = new HashSet<AttributeSyntax>();
+
+            foreach( AttributeListSyntax attributeList in root.AttributeLists )
+            {
+                foreach( AttributeSyntax attributes in attributeList.Attributes )
+                {
+                    string name = attributes.Name.ToString();
+                    Type? type = AssemblyAttributeMapping.TryGetTypeFromName( name );
+                    if( type is null )
+                    {
+                        continue;
+                    }
+
+                    var attributeParameters = new List<string>();
+                    AttributeArgumentListSyntax? attributeArgSyntax = attributes.ArgumentList;
+                    if( attributeArgSyntax is not null )
+                    {
+                        foreach( AttributeArgumentSyntax argumentSyntax in attributeArgSyntax.Arguments )
+                        {
+                            string text;
+                            ExpressionSyntax expression = argumentSyntax.Expression;
+                            if( expression is InterpolatedStringExpressionSyntax interString )
+                            {
+                                text = expression.ToString();
+                            }
+                            else
+                            {
+                                text = expression.ToString().Trim( '"' );
+                            }
+                            attributeParameters.Add( text );
+                        }
+                    }
+
+                    SupportedAssemblyAttributes? supportedAssembly = AssemblyAttributeMapping.TryGetAssemblyAttributeFromType( type );
+                    if( supportedAssembly is null )
+                    {
+                        throw new InvalidOperationException(
+                            $"Could not find a supported assembly attribute from type: {type}"
+                        );
+                    }
+
+                    MigrationBehavior behavior = this.config.GetMigrationBehavior( supportedAssembly.Value );
+                    if( behavior == MigrationBehavior.migrate )
+                    {
+                        model.AddType( type, attributeParameters );
+                    }
+
+                    if(
+                        ( behavior == MigrationBehavior.migrate ) ||
+                        ( behavior == MigrationBehavior.delete )
+                    )
+                    {
+                        attributesToDelete.Add( attributes );
+                    }
+                }
+            }
+
+            // If we contain anything other than using statements
+            // we want to keep the file as-is.
+            bool safeToDelete = true;
+            foreach( SyntaxNode node in root.DescendantNodes() )
+            {
+                if( node is UsingDirectiveSyntax usingStatement )
+                {
+                    // Do not delete if there are global using statements,
+                    // as those impact the entire assembly.
+                    // We'll need to keep the file instead.
+                    if( usingStatement.GlobalKeyword.IsMissing == false )
+                    {
+                        safeToDelete = false;
+                    }
+                }
+            }
+
+            string newCsProj = BuildCsProj( csProjContents, model );
+            string newAssemblyInfo;
+            if( safeToDelete )
+            {
+                newAssemblyInfo = "";
+            }
+            else
+            {
+                newAssemblyInfo = "?";
+            }
+            return new MigrationResult( newCsProj, newAssemblyInfo );
         }
 
         public void WriteFiles( MigrationResult result )
@@ -64,6 +153,82 @@ namespace Ai2Csproj
 
             WriteFile( csProjFile, result.CsprojContents );
             WriteFile( assemblyInfoFile, result.AssemblyInfoContents );
+        }
+
+        private string BuildCsProj( string originalCsProjContents, AssemblyInfoModel model )
+        {
+            XElement? propertyGroup = model.GetPropertyGroupXml();
+            XElement? itemGroup = model.GetItemGroupXml();
+
+            if( ( propertyGroup is null ) && ( itemGroup is null ) )
+            {
+                return originalCsProjContents;
+            }
+
+            XDocument csproj = XDocument.Load( originalCsProjContents );
+            XElement? root = csproj.Root;
+            if( root is null )
+            {
+                throw new InvalidOperationException( "Somehow, the csproj root node is null" );
+            }
+            if( root.HasElements == false )
+            {
+                if( propertyGroup is not null )
+                {
+                    root.Add( propertyGroup );
+                }
+
+                if( itemGroup is not null )
+                {
+                    root.Add( itemGroup );
+                }
+            }
+            else
+            {
+                if( propertyGroup is not null )
+                {
+                    XElement? lastPropertyGroup = null;
+                    foreach( XElement element in root.Elements() )
+                    {
+                        if( "PropertyGroup".Equals( element.Name.LocalName ) )
+                        {
+                            lastPropertyGroup = element;
+                        }
+                    }
+
+                    if( lastPropertyGroup is null )
+                    {
+                        root.AddFirst( propertyGroup );
+                    }
+                    else
+                    {
+                        lastPropertyGroup.AddAfterSelf( propertyGroup );
+                    }
+                }
+
+                if( itemGroup is not null )
+                {
+                    XElement? lastItemGroup = null;
+                    foreach( XElement element in root.Elements() )
+                    {
+                        if( "ItemGroup".Equals( element.Name.LocalName ) )
+                        {
+                            lastItemGroup = element;
+                        }
+                    }
+
+                    if( lastItemGroup is null )
+                    {
+                        root.Add( itemGroup );
+                    }
+                    else
+                    {
+                        lastItemGroup.AddAfterSelf( itemGroup );
+                    }
+                }
+            }
+
+            return csproj.ToString( SaveOptions.DisableFormatting );
         }
 
         private void BackupFile( FileInfo fileInfo )

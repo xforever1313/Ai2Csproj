@@ -100,6 +100,40 @@ namespace Ai2Csproj
             return null;
         }
 
+        public static Type? TryGetTypeFromName( string typeName )
+        {
+            if( typeName.EndsWith( "Attribute" ) == false )
+            {
+                typeName = $"{typeName}Attribute";
+            }
+
+            foreach( Type type in supportedAssembliesMapping.Values )
+            {
+                if(
+                    typeName.Equals( type.FullName ) ||
+                    typeName.Equals( type.Name )
+                )
+                {
+                    return type;
+                }
+            }
+
+            return null;
+        }
+
+        public static SupportedAssemblyAttributes? TryGetAssemblyAttributeFromType( Type type )
+        {
+            foreach( var kvp in supportedAssembliesMapping )
+            {
+                if( type.Equals( kvp.Value ) )
+                {
+                    return kvp.Key;
+                }
+            }
+
+            return null;
+        }
+
         public static Type GetType( SupportedAssemblyAttributes attribute )
         {
             return supportedAssembliesMapping[attribute];

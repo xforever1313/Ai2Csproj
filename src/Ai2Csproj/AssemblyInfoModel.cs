@@ -38,7 +38,7 @@ namespace Ai2Csproj
 
         // ---------------- Functions ----------------
 
-        public void AddType( Type type, params string[] parameters )
+        public void AddType( Type type, IEnumerable<string> parameters )
         {
             if( AssemblyAttributeMapping.IsMultiplePerAssemblyAllowed( type ) == false )
             {
@@ -50,11 +50,11 @@ namespace Ai2Csproj
             }
             else if(
                 AssemblyAttributeMapping.IsOnlyOneParameterAllowed( type ) &&
-                ( parameters.Length != 1 )
+                ( parameters.Count() != 1 )
             )
             {
                 errors.Add(
-                    $"{type.FullName} can only have 1 and only 1 parameter, got: {parameters.Length}."
+                    $"{type.FullName} can only have 1 and only 1 parameter, got: {parameters.Count()}."
                 );
             }
 
