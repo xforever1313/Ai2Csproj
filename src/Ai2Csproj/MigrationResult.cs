@@ -22,7 +22,7 @@ namespace Ai2Csproj
         public MigrationResult( string assemblyInfoContents, string csprojContents )
         {
             this.AssemblyInfoContents = assemblyInfoContents;
-            this.CprojContents = csprojContents;
+            this.CsprojContents = csprojContents;
         }
 
         // ---------------- Properties ----------------
@@ -36,6 +36,6 @@ namespace Ai2Csproj
         /// <summary>
         /// The contents of the csproj to write out.
         /// </summary>
-        public string CprojContents { get; private set; }
+        public string CsprojContents { get; private set; }
     }
 }

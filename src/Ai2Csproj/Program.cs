@@ -84,6 +84,10 @@ internal class Program
     private static void Run( Ai2CsprojConfig config )
     {
         config.Validate();
+
+        var migrator = new Migrator( config );
+        MigrationResult result = migrator.Migrate();
+        migrator.WriteFiles( result );
     }
 
     private static void PrintVersion()
