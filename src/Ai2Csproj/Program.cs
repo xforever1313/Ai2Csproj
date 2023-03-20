@@ -16,6 +16,7 @@
 using Ai2Csproj;
 using Mono.Options;
 using SethCS.Exceptions;
+using SethCS.IO;
 
 internal class Program
 {
@@ -116,9 +117,19 @@ internal class Program
 
     private static void PrintLicense()
     {
+        string text = AssemblyResourceReader.ReadStringResource(
+            typeof( Program ).Assembly, $"{nameof( Ai2Csproj )}.License.md"
+        );
+
+        Console.WriteLine( text );
     }
 
     private static void PrintCredits()
     {
+        string text = AssemblyResourceReader.ReadStringResource(
+            typeof( Program ).Assembly, $"{nameof( Ai2Csproj )}.Credits.md"
+        );
+
+        Console.WriteLine( text );
     }
 }

@@ -17,6 +17,15 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="..\..\Credits.md" Link="Credits.md">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\License.md" Link="License.md">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
     <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
 	  <_Parameter1>Ai2Csproj.Tests</_Parameter1>
 	</AssemblyAttribute>
