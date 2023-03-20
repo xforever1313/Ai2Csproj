@@ -74,6 +74,7 @@ namespace Ai2Csproj
                     [SupportedAssemblyAttributes.internals_visible_to] = typeof( InternalsVisibleToAttribute ),
                     [SupportedAssemblyAttributes.com_visible] = typeof( ComVisibleAttribute ),
                     [SupportedAssemblyAttributes.cls_compliant] = typeof( CLSCompliantAttribute ),
+                    [SupportedAssemblyAttributes.assembly_guid] = typeof( GuidAttribute )
                 };
 
                 supportedAssembliesMapping = new ReadOnlyDictionary<SupportedAssemblyAttributes, Type>( dict );

@@ -65,6 +65,8 @@ namespace Ai2Csproj
 
         assembly_trademark = ( 2L << 13 ),
 
-        cls_compliant = ( 2L << 14 )
+        cls_compliant = ( 2L << 14 ),
+
+        assembly_guid = ( 2L << 15 )
     }
 }

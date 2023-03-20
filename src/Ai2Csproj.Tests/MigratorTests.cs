@@ -38,6 +38,8 @@ namespace Ai2Csproj.Tests
         private const string defaultTrademark = "My Trademark";
         private const bool defaultCls = false;
 
+        private const string defaultGuid = "9ED54F84-A89D-4fcd-A854-44251E925F09";
+
         private const string defaultStartingCsProj =
 $@"<Project Sdk=""Microsoft.NET.Sdk"">
 
@@ -80,6 +82,7 @@ using System.Runtime.InteropServices;
 [assembly: InternalsVisibleTo( ""{defaultInternals1}"" ),InternalsVisibleTo( ""{defaultInternals2}"" )]
 [assembly:ComVisible( {defaultComVisible} )]
 [assembly:CLSCompliant( {defaultCls} )]
+[assembly: Guid(""{defaultGuid}"")]
 ";
         // ---------------- Tests ----------------
 
@@ -128,6 +131,9 @@ $@"<Project Sdk=""Microsoft.NET.Sdk"">
     </AssemblyAttribute>
     <AssemblyAttribute Include=""System.CLSCompliantAttribute"">
         <_Parameter1>{defaultCls}</_Parameter1>
+    </AssemblyAttribute>
+    <AssemblyAttribute Include=""System.Runtime.InteropServices.GuidAttribute"">
+        <_Parameter1>{defaultGuid}</_Parameter1>
     </AssemblyAttribute>
   </ItemGroup>
 </Project>";
