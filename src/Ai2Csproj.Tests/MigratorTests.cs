@@ -18,7 +18,7 @@ using System.Xml.Linq;
 namespace Ai2Csproj.Tests
 {
     [TestClass]
-    public sealed class MigratorTests
+    public sealed partial class MigratorTests
     {
         // ---------------- Fields ----------------
 
@@ -84,114 +84,6 @@ using System.Runtime.InteropServices;
 [assembly:CLSCompliant( {defaultCls} )]
 [assembly: Guid(""{defaultGuid}"")]
 ";
-        // ---------------- Tests ----------------
-
-        [TestMethod]
-        public void MigrateAllAttributesTest()
-        {
-            string expectedCsProj =
-$@"<Project Sdk=""Microsoft.NET.Sdk"">
-  <PropertyGroup>
-    <OutputType>Exe</OutputType>
-    <TargetFramework>net6.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-  </PropertyGroup>
-  <PropertyGroup>
-    <Company>{defaultCompany}</Company>
-    <Configuration>{defaultConfiguration}</Configuration>
-    <Copyright>{defaultCopyRight}</Copyright>
-    <Description>{defaultDescription}</Description>
-    <FileVersion>{defaultFileVersion}</FileVersion>
-    <InformationalVersion>{defaultInfoVersion}</InformationalVersion>
-    <Product>{defaultProduct}</Product>
-    <AssemblyTitle>{defaultTitle}</AssemblyTitle>
-    <AssemblyVersion>{defaultVersion}</AssemblyVersion>
-    <NeutralLanguage>{defaultLanguage}</NeutralLanguage>
-  </PropertyGroup>
-  <ItemGroup>
-    <PackageReference Include=""Microsoft.CodeAnalysis.CSharp"" />
-    <PackageReference Include=""Mono.Options"" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include=""..\..\SethCS\LibSethCS\LibSethCS.csproj"" />
-  </ItemGroup>
-  <ItemGroup>
-    <AssemblyAttribute Include=""System.Reflection.AssemblyTrademarkAttribute"">
-        <_Parameter1>{defaultTrademark}</_Parameter1>
-    </AssemblyAttribute>
-    <AssemblyAttribute Include=""System.Runtime.CompilerServices.InternalsVisibleToAttribute"">
-        <_Parameter1>{defaultInternals1}</_Parameter1>
-    </AssemblyAttribute>
-    <AssemblyAttribute Include=""System.Runtime.CompilerServices.InternalsVisibleToAttribute"">
-        <_Parameter1>{defaultInternals2}</_Parameter1>
-    </AssemblyAttribute>
-    <AssemblyAttribute Include=""System.Runtime.InteropServices.ComVisibleAttribute"">
-        <_Parameter1>{defaultComVisible}</_Parameter1>
-    </AssemblyAttribute>
-    <AssemblyAttribute Include=""System.CLSCompliantAttribute"">
-        <_Parameter1>{defaultCls}</_Parameter1>
-    </AssemblyAttribute>
-    <AssemblyAttribute Include=""System.Runtime.InteropServices.GuidAttribute"">
-        <_Parameter1>{defaultGuid}</_Parameter1>
-    </AssemblyAttribute>
-  </ItemGroup>
-</Project>";
-
-            // Setup
-            var config = new Ai2CsprojConfig
-            {
-                // Default should be to migrate all.
-                DeleteOldAssemblyInfo = true
-            };
-
-            // Act / Check
-            DoMigrationTest(
-                config,
-                defaultStartingCsProj,
-                defaultStartingAssemblyInfo,
-                expectedCsProj,
-                ""
-            );
-        }
-
-        // -------- Delete Tests --------
-
-        [TestMethod]
-        public void DeleteAllAttributesTest()
-        {
-            // Setup
-            var config = GetConfigWithAllDeleted( null );
-            config = config with { DeleteOldAssemblyInfo = true };
-
-            // Act / Check
-            DoMigrationTest(
-                config,
-                defaultStartingCsProj,
-                defaultStartingAssemblyInfo,
-                defaultStartingCsProj,
-                ""
-            );
-        }
-
-        // -------- Leave Tests --------
-
-        [TestMethod]
-        public void LeaveAllAttributesTest()
-        {
-            // Setup
-            var config = GetConfigWithAllLeave( null );
-
-            // Act / Check
-            DoMigrationTest(
-                config,
-                defaultStartingCsProj,
-                defaultStartingAssemblyInfo,
-                defaultStartingCsProj,
-                defaultStartingAssemblyInfo
-            );
-        }
-
         // ---------------- Test Helpers ----------------
 
         private void DoMigrationTest(
