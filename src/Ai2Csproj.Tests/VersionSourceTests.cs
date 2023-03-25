@@ -68,6 +68,7 @@ using System.Runtime.InteropServices;
             // Setup
             var config = new Ai2CsprojConfig
             {
+                DeleteOldAssemblyInfo = true,
                 TypesToDelete = allVersionFlag,
                 VersionSourceStrategy = VersionSource.exclude_version
             };
@@ -185,6 +186,7 @@ $@"<Project Sdk=""Microsoft.NET.Sdk"">
 
             var config = new Ai2CsprojConfig
             {
+                DeleteOldAssemblyInfo = true,
                 TypesToDelete = allVersionFlag,
                 VersionSourceStrategy = versionSource
             };

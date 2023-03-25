@@ -96,6 +96,10 @@ namespace Ai2Csproj
                         {
                             model.AddUnsupportedType( name, attributeParameters );
                         }
+                        else
+                        {
+                            attributesToKeep = attributesToKeep.Add( attributes );
+                        }
                     }
                     else
                     {

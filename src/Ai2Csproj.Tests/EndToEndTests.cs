@@ -35,6 +35,8 @@ namespace Ai2Csproj.Tests
 
         private const string defaultTrademark = "My Trademark";
 
+        private const string defaultCustom = "My Custom Value";
+
         private const string defaultOriginalCsProj =
 @"<Project Sdk=""Microsoft.NET.Sdk"">
 
@@ -58,6 +60,11 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyVersion( ""{defaultAssemblyVersion}"" )]
 [assembly: AssemblyTrademark( ""{defaultTrademark}"" )]
 ";
+
+        private static readonly string defaultOriginalAssemblyInfoWithUnsupportedType =
+            defaultOriginalAssemblyInfo +
+            $@"[assembly: NameSpace.CustomAttribute( ""{defaultCustom}"" )]" +
+            Environment.NewLine;
 
         // ---------------- Tests ----------------
 
@@ -119,6 +126,182 @@ using System.Runtime.InteropServices;
         }
 
         /// <summary>
+        /// Default settings include:
+        /// - Everything is migrated.
+        /// - Version source is "do nothing".
+        /// - Backups are enabled.
+        /// - Dry run is disabled.
+        /// - AssemblyInfo is not deleted.
+        /// </summary>
+        [TestMethod]
+        public void TestWithDefaultSettingsWithUnsupportedType()
+        {
+            const string expectedCsProj =
+$@"<Project Sdk=""Microsoft.NET.Sdk"">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <Copyright>{defaultCopyRight}</Copyright>
+    <AssemblyVersion>{defaultAssemblyVersion}</AssemblyVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <AssemblyAttribute Include=""System.Reflection.AssemblyTrademarkAttribute"">
+        <_Parameter1>{defaultTrademark}</_Parameter1>
+    </AssemblyAttribute>
+  </ItemGroup>
+</Project>
+";
+
+            const string expectedAssemblyInfo =
+$@"using System.Reflection;
+using System.Resources;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+[assembly: NameSpace.CustomAttribute( ""{defaultCustom}"" )]
+";
+
+            var testConfig = new TestConfig( nameof( TestWithDefaultSettings ) )
+            {
+                Arguments = new string[]
+                {
+                },
+                ExpectBackups = true,
+                OriginalCsProj = defaultOriginalCsProj,
+                OriginalAssemblyInfo = defaultOriginalAssemblyInfoWithUnsupportedType,
+                ExpectedCsProj = expectedCsProj,
+                ExpectedAssemblyInfo = expectedAssemblyInfo,
+                ExpectedExitCode = 0
+            };
+
+            RunTest( testConfig );
+        }
+
+        /// <summary>
+        /// Settings include:
+        /// - Everything is migrated.
+        /// - Version source is "do nothing".
+        /// - Backups are enabled.
+        /// - Dry run is disabled.
+        /// - AssemblyInfo should be attempted to be deleted, and should
+        ///   be since nothing is left.
+        /// </summary>
+        [TestMethod]
+        public void TestWithUnsupportedAssemblyEnabled()
+        {
+            const string expectedCsProj =
+$@"<Project Sdk=""Microsoft.NET.Sdk"">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <Copyright>{defaultCopyRight}</Copyright>
+    <AssemblyVersion>{defaultAssemblyVersion}</AssemblyVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <AssemblyAttribute Include=""System.Reflection.AssemblyTrademarkAttribute"">
+        <_Parameter1>{defaultTrademark}</_Parameter1>
+    </AssemblyAttribute>
+    <AssemblyAttribute Include=""NameSpace.CustomAttribute"">
+        <_Parameter1>{defaultCustom}</_Parameter1>
+    </AssemblyAttribute>
+  </ItemGroup>
+</Project>
+";
+
+            const string? expectedAssemblyInfo = null;
+
+            var testConfig = new TestConfig( nameof( TestWithUnsupportedAssemblyEnabled ) )
+            {
+                Arguments = new string[]
+                {
+                    "--migrate_unsupported_types",
+                    "--delete_old_assembly_info"
+                },
+                ExpectBackups = true,
+                OriginalCsProj = defaultOriginalCsProj,
+                OriginalAssemblyInfo = defaultOriginalAssemblyInfoWithUnsupportedType,
+                ExpectedCsProj = expectedCsProj,
+                ExpectedAssemblyInfo = expectedAssemblyInfo,
+                ExpectedExitCode = 0
+            };
+
+            RunTest( testConfig );
+        }
+
+        /// <summary>
+        /// Settings include:
+        /// - Everything is migrated.
+        /// - Version source is "do nothing".
+        /// - Backups are enabled.
+        /// - Dry run is disabled.
+        /// - AssemblyInfo should be attempted to be deleted, and should
+        ///   not be since unsupported types are not bein migrated.
+        /// </summary>
+        [TestMethod]
+        public void TestWithUnsupportedTypesDisabled()
+        {
+            const string expectedCsProj =
+$@"<Project Sdk=""Microsoft.NET.Sdk"">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <Copyright>{defaultCopyRight}</Copyright>
+    <AssemblyVersion>{defaultAssemblyVersion}</AssemblyVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <AssemblyAttribute Include=""System.Reflection.AssemblyTrademarkAttribute"">
+        <_Parameter1>{defaultTrademark}</_Parameter1>
+    </AssemblyAttribute>
+  </ItemGroup>
+</Project>
+";
+
+            const string expectedAssemblyInfo =
+$@"using System.Reflection;
+using System.Resources;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+[assembly: NameSpace.CustomAttribute( ""{defaultCustom}"" )]
+";
+
+            var testConfig = new TestConfig( nameof( TestWithUnsupportedTypesDisabled ) )
+            {
+                Arguments = new string[]
+                {
+                    "--delete_old_assembly_info"
+                },
+                ExpectBackups = true,
+                OriginalCsProj = defaultOriginalCsProj,
+                OriginalAssemblyInfo = defaultOriginalAssemblyInfoWithUnsupportedType,
+                ExpectedCsProj = expectedCsProj,
+                ExpectedAssemblyInfo = expectedAssemblyInfo,
+                ExpectedExitCode = 0
+            };
+
+            RunTest( testConfig );
+        }
+
+        /// <summary>
         /// Settings include:
         /// - Everything is migrated.
         /// - Version source is "do nothing".
@@ -159,13 +342,66 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 ";
 
-            var testConfig = new TestConfig( nameof( TestWithDefaultSettings ) )
+            var testConfig = new TestConfig( nameof( TestWithBackupsDisabled ) )
             {
                 Arguments = new string[]
                 {
                     "--no_backup"
                 },
                 ExpectBackups = false,
+                OriginalCsProj = defaultOriginalCsProj,
+                OriginalAssemblyInfo = defaultOriginalAssemblyInfo,
+                ExpectedCsProj = expectedCsProj,
+                ExpectedAssemblyInfo = expectedAssemblyInfo,
+                ExpectedExitCode = 0
+            };
+
+            RunTest( testConfig );
+        }
+
+        /// <summary>
+        /// Settings include:
+        /// - Everything is migrated.
+        /// - Version source is "do nothing".
+        /// - Backups are disabled.
+        /// - Dry run is disabled.
+        /// - AssemblyInfo should be deleted if its safe.
+        /// </summary>
+        [TestMethod]
+        public void TestWithAssemblyInfoDeleteOn()
+        {
+            const string expectedCsProj =
+$@"<Project Sdk=""Microsoft.NET.Sdk"">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <Copyright>{defaultCopyRight}</Copyright>
+    <AssemblyVersion>{defaultAssemblyVersion}</AssemblyVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <AssemblyAttribute Include=""System.Reflection.AssemblyTrademarkAttribute"">
+        <_Parameter1>{defaultTrademark}</_Parameter1>
+    </AssemblyAttribute>
+  </ItemGroup>
+</Project>
+";
+
+            const string? expectedAssemblyInfo = null;
+
+            var testConfig = new TestConfig( nameof( TestWithAssemblyInfoDeleteOn ) )
+            {
+                Arguments = new string[]
+                {
+                    "--delete_old_assembly_info"
+                },
+                ExpectBackups = true,
                 OriginalCsProj = defaultOriginalCsProj,
                 OriginalAssemblyInfo = defaultOriginalAssemblyInfo,
                 ExpectedCsProj = expectedCsProj,
@@ -188,7 +424,7 @@ using System.Runtime.InteropServices;
                 "--dry_run"
             };
 
-            DoArgumentsDoNotChangeStateTest( args );
+            DoArgumentsDoNotChangeStateTest( args, nameof( TestWithDryRunEnabled ) );
         }
 
         [TestMethod]
@@ -199,7 +435,7 @@ using System.Runtime.InteropServices;
                 "--help"
             };
 
-            DoArgumentsDoNotChangeStateTest( args );
+            DoArgumentsDoNotChangeStateTest( args, nameof( TestWithHelpArgument ) );
         }
 
         [TestMethod]
@@ -210,7 +446,7 @@ using System.Runtime.InteropServices;
                 "--version"
             };
 
-            DoArgumentsDoNotChangeStateTest( args );
+            DoArgumentsDoNotChangeStateTest( args, nameof( TestWithVersionArgument ) );
         }
 
         [TestMethod]
@@ -221,7 +457,7 @@ using System.Runtime.InteropServices;
                 "--print_credits"
             };
 
-            DoArgumentsDoNotChangeStateTest( args );
+            DoArgumentsDoNotChangeStateTest( args, nameof( TestWithPrintCreditsArgument ) );
         }
 
         [TestMethod]
@@ -232,7 +468,7 @@ using System.Runtime.InteropServices;
                 "--print_license"
             };
 
-            DoArgumentsDoNotChangeStateTest( args );
+            DoArgumentsDoNotChangeStateTest( args, nameof( TestWithPrintLicenseArgument ) );
         }
 
         [TestMethod]
@@ -243,14 +479,14 @@ using System.Runtime.InteropServices;
                 "--list_supported_types"
             };
 
-            DoArgumentsDoNotChangeStateTest( args );
+            DoArgumentsDoNotChangeStateTest( args, nameof( TestWithListSupportedTypesArgument ) );
         }
 
         // ---------------- Test Helpers ----------------
 
-        private static void DoArgumentsDoNotChangeStateTest( string[] args )
+        private static void DoArgumentsDoNotChangeStateTest( string[] args, string testName )
         {
-            var testConfig = new TestConfig( nameof( TestWithDefaultSettings ) )
+            var testConfig = new TestConfig( testName )
             {
                 Arguments = args,
                 // State should not change, backups should not be created.
