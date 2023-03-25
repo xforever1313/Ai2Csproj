@@ -36,8 +36,8 @@ namespace Ai2Csproj
         public Migrator( Ai2CsprojConfig config )
         {
             this.config = config;
-            this.csProjFile = this.config.CsProjPath;
-            this.assemblyInfoFile = this.config.AssmblyInfoPath;
+            this.csProjFile = this.config.GetCsProjPathAsFileInfo();
+            this.assemblyInfoFile = this.config.GetAsemblyInfoAsFileInfo();
         }
 
         // ---------------- Functions ----------------

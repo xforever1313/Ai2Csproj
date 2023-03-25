@@ -36,7 +36,9 @@ namespace Ai2Csproj.Shared
         leave
     }
 
+#if NET6_0_OR_GREATER
     [Flags]
+#endif
     internal enum SupportedAssemblyAttributes : long
     {
         assembly_company = ( 2L << 1 ),

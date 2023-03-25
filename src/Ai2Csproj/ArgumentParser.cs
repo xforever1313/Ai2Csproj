@@ -65,12 +65,12 @@ namespace Ai2Csproj
                 {
                     "project_path=",
                     "The path to the csproj to process.  If not specified, tries to search for a csproj with the same name as the current directory.",
-                    v => this.Config = this.Config with { CsProjPath = new FileInfo( v ) }
+                    v => this.Config = this.Config with { CsProjPath = v }
                 },
                 {
                     "assembly_info_path=",
                     "The path to the AssemblyInfo.cs file.  If not specified, tries to search in the Properties directory in the same directory as csproj file.",
-                    v => this.Config = this.Config  with{ AssmblyInfoPath = new FileInfo( v ) }
+                    v => this.Config = this.Config  with{ AssmblyInfoPath = v }
                 },
                 {
                     "delete_old_assembly_info",

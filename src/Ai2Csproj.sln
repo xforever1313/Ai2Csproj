@@ -15,6 +15,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Seth.Analyzer", "..\SethCS\
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Ai2Csproj.Shared", "Ai2Csproj.Shared\Ai2Csproj.Shared.shproj", "{1FECAA98-89CF-4E26-93D2-4671B55C34F5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ai2Csproj.TestGenerator", "Ai2Csproj.TestGenerator\Ai2Csproj.TestGenerator.csproj", "{EC6A2668-4BA5-45BB-9CC1-03A36C53A832}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -37,14 +39,22 @@ Global
 		{CE4C0605-4E8C-4060-9FD7-AA30B9CA7CA2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CE4C0605-4E8C-4060-9FD7-AA30B9CA7CA2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CE4C0605-4E8C-4060-9FD7-AA30B9CA7CA2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EC6A2668-4BA5-45BB-9CC1-03A36C53A832}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EC6A2668-4BA5-45BB-9CC1-03A36C53A832}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EC6A2668-4BA5-45BB-9CC1-03A36C53A832}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EC6A2668-4BA5-45BB-9CC1-03A36C53A832}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {6ED9E92B-A92F-492E-8DBE-6846A5F18C96}
 	EndGlobalSection
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		Ai2Csproj.Shared\Ai2Csproj.Shared.projitems*{1fecaa98-89cf-4e26-93d2-4671b55c34f5}*SharedItemsImports = 13
 		..\SethCS\SethCS\SethCS.projitems*{52089274-b9a2-4a47-a221-c321dee1ce7f}*SharedItemsImports = 13
 		Ai2Csproj.Shared\Ai2Csproj.Shared.projitems*{6677951c-bfe0-41ac-9863-9965c46a7101}*SharedItemsImports = 5
+		Ai2Csproj.Shared\Ai2Csproj.Shared.projitems*{ec6a2668-4ba5-45bb-9cc1-03a36c53a832}*SharedItemsImports = 5
 		..\SethCS\SethCS\SethCS.projitems*{f45568aa-bd9a-4035-9338-40597b58dbeb}*SharedItemsImports = 5
 	EndGlobalSection
 EndGlobal

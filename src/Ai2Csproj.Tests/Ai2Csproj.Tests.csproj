@@ -16,6 +16,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Ai2Csproj.TestGenerator\Ai2Csproj.TestGenerator.csproj"
+					  OutputItemType="Analyzer"
+                      ReferenceOutputAssembly="false" />
     <ProjectReference Include="..\Ai2Csproj\Ai2Csproj.csproj" />
   </ItemGroup>
 

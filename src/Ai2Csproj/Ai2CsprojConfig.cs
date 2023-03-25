@@ -20,18 +20,21 @@ namespace Ai2Csproj
 {
     internal record class Ai2CsprojConfig
     {
-        // ---------------- Constructor ----------------
+        // ---------------- Fields ----------------
+
+        // ---------------- Properties ----------------
 
         public bool DryRun { get; init; } = false;
 
         public bool DeleteBackup { get; init; } = false;
 
-        public FileInfo CsProjPath { get; init; } = new FileInfo(
-            $"{Environment.CurrentDirectory}.csproj"
-        );
+        public string CsProjPath { get; init; } =
+            $"{Environment.CurrentDirectory}.csproj";
 
-        public FileInfo AssmblyInfoPath { get; init; } = new FileInfo(
-            Path.Combine( ".", "Properties", "AssemblyInfo.cs" )
+        public string AssmblyInfoPath { get; init; } = Path.Combine(
+            Environment.CurrentDirectory,
+            "Properties",
+            "AssemblyInfo.cs"
         );
 
         public bool DeleteOldAssemblyInfo { get; init; } = false;
@@ -46,18 +49,31 @@ namespace Ai2Csproj
 
         // ---------------- Functions ----------------
 
+        public FileInfo GetCsProjPathAsFileInfo()
+        {
+            return new FileInfo( this.CsProjPath );
+        }
+
+        public FileInfo GetAsemblyInfoAsFileInfo()
+        {
+            return new FileInfo( this.AssmblyInfoPath );
+        }
+
         public void Validate()
         {
             var errors = new List<string>();
 
-            if( this.CsProjPath.Exists == false )
+            FileInfo csProjPath = GetCsProjPathAsFileInfo();
+            FileInfo assemblyInfoPath = GetAsemblyInfoAsFileInfo();
+
+            if( csProjPath.Exists == false )
             {
-                errors.Add( $"{this.CsProjPath.FullName} does not exist!" );
+                errors.Add( $"{csProjPath.FullName} does not exist!" );
             }
 
-            if( this.AssmblyInfoPath.Exists == false )
+            if( assemblyInfoPath.Exists == false )
             {
-                errors.Add( $"{this.AssmblyInfoPath.FullName} does not exist!" );
+                errors.Add( $"{assemblyInfoPath.FullName} does not exist!" );
             }
 
             if( errors.Any() )
