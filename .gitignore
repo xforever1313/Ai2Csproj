@@ -15,6 +15,7 @@ tools
 *.sha256
 *.msi
 dist/
+.cake/
 
 # globs
 Makefile.in

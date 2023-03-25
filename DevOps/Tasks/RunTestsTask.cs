@@ -13,12 +13,36 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+using Cake.ArgumentBinder;
 using Cake.Frosting;
 using Seth.CakeLib.TestRunner;
 
 namespace DevOps.Tasks;
+public class TestArguments
+{
+    // ---------------- Fields ----------------
+
+    public static readonly string CoverageFilter = "+[*]Ai2Csproj*";
+
+    // ---------------- Constructor ----------------
+
+    public TestArguments()
+    {
+        this.RunWithCodeCoverage = false;
+    }
+
+    // ---------------- Properties ----------------
+
+    [BooleanArgument(
+        "code_coverage",
+        Description = "Should we run this with code coverage?",
+        DefaultValue = false
+    )]
+    public bool RunWithCodeCoverage { get; set; }
+}
 
 [TaskName( "run_tests" )]
+[TaskDescription( "Runs all tests.  Pass in --code_coverage=true to run code coverage." )]
 public sealed class RunTestsTask : DevopsTask
 {
     public override void Run( BuildContext context )
@@ -30,6 +54,15 @@ public sealed class RunTestsTask : DevopsTask
         };
 
         var runner = new BaseTestRunner( context, testConfig, "Ai2Csproj.Tests" );
-        runner.RunTests();
+
+        TestArguments args = context.CreateFromArguments<TestArguments>();
+        if( args.RunWithCodeCoverage )
+        {
+            runner.RunCodeCoverage( TestArguments.CoverageFilter );
+        }
+        else
+        {
+            runner.RunTests();
+        }
     }
 }

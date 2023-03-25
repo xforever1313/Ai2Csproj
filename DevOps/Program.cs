@@ -35,6 +35,8 @@ internal class Program
         return new CakeHost()
             .UseContext<BuildContext>()
             .SetToolPath( ".cake" )
+            .InstallTool( new Uri( "nuget:?package=OpenCover&version=4.7.1221" ) )
+            .InstallTool( new Uri( "nuget:?package=ReportGenerator&version=5.1.19" ) )
             .UseWorkingDirectory( repoRoot )
             .AddAssembly( SethCakeLib.GetAssembly() )
             .Run( args );
