@@ -22,6 +22,19 @@ Supported types have the benefit of you being able to specify how ai2csproj hand
 
 Unsupported types can still be migrated just fine; but by default they are left alone.  Simply pass in ```--migrate_unsupported_types``` on the command line to migrate _all_ unsupported types (its all or nothing).
 
+### Version Sources
+
+The new SDK-Style .csproj format includes a ```<Version>``` property.  According to [Microsoft's Documentation](https://learn.microsoft.com/en-us/dotnet/core/project-sdk/msbuild-props), If this is specified, but ```<AssemblyVersion>```, ```<FileVersion>```, and/or ```<InformationalVersion>``` are not, then those three values are defaulted to whatever is in the ```<Version>``` tag (AssemblyVersion and FileVersion have any suffixes specified in `Version removed).
+
+The ```<Version>``` property does not tie directly to an Assembly Attribute.  Therefore, the tool needs to know where to pull the version information from.  This is done via the ```--version_source``` argument.  By default, no ```<Version>``` property is generated.  However, if the argument is specified, these are the possible options:
+
+* ```exclude_version``` - Do not add a ```<Version>``` property to the .csproj file.  This is the default behavior if the ```--version_source``` argument is not specified.
+* ```use_assembly_version``` - Copy the AssemblyVersion value into the csproj's Version element.
+* ```use_file_version``` - Copy the AssemblyFileVersion value into the csproj's Version element.
+* ```use_informational_version``` - Copy the AssemblyInformationalVersion value into the csproj's Version element.
+
+Note that if a ```--version_source``` is specified, the attribute that it copied the information from is _still_ copied to the csproj by default.  So, for example, if ```--version_source=use_assembly_version``` is passed in, the csproj will contain a ```<Version>``` and a ```<AssemblyVersion>``` tag.  To have it completely migrate away from ```<AssemblyVersion>``` (or any of the other version attributes) and have the csproj only contain ```<Version>```, append the appropriate behavior argument set to delete, such as ```--assembly_version_behavior=delete```.
+
 ### Other flags
 
 * ```--dry_run``` - Prints to the STDOUT what ai2csproj will do without actually doing it.  The final contents of the csproj and AssemblyInfo file will be printed to STDOUT as well.
@@ -34,3 +47,4 @@ Unsupported types can still be migrated just fine; but by default they are left 
 * When parsing an AssemblyInfo, if you have a class that just so happens to match the same name as one of the supported assembly attributes, that will be removed and migrated to the csproj.  The way to have the tool not do this is by passing in the appropriate "leave" argument for that attribute so the tool leaves that assembly alone.
 * Comments within the AssemblyInfo are not migrated to the .csproj.
 * If your AssemblyInfo.cs file has a syntax error, ai2csproj probably won't work.  Make sure your project compiles before running ai2csproj.
+* When using a version source that copies from AssemblyVersion or FileVersion, the attribute's values are copied _exactly_, even if the value is invalid for the ```<Version>``` property.
