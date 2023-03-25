@@ -1,5 +1,5 @@
 <Project>
-  <Import Project="$(MSBuildThisFileDirectory)\..\SethCS\Directory.Build.targets"/>
+  <Import Project="$(MSBuildThisFileDirectory)\SethCS\Directory.Build.targets"/>
   
   <ItemGroup>
     <PackageReference Update="Microsoft.CodeAnalysis.CSharp" Version="4.5.0" />
