@@ -126,6 +126,7 @@ namespace Ai2Csproj
                         $"_Parameter{i}",
                         parameter
                     );
+                    ++i;
 
                     attributeElement.Add( parameterElement );
                 }

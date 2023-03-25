@@ -75,7 +75,10 @@ namespace Ai2Csproj
                     [SupportedAssemblyAttributes.internals_visible_to] = typeof( InternalsVisibleToAttribute ),
                     [SupportedAssemblyAttributes.com_visible] = typeof( ComVisibleAttribute ),
                     [SupportedAssemblyAttributes.cls_compliant] = typeof( CLSCompliantAttribute ),
-                    [SupportedAssemblyAttributes.assembly_guid] = typeof( GuidAttribute )
+                    [SupportedAssemblyAttributes.assembly_guid] = typeof( GuidAttribute ),
+                    [SupportedAssemblyAttributes.assembly_key_file] = typeof( AssemblyKeyFileAttribute ),
+                    [SupportedAssemblyAttributes.assembly_key_name] = typeof( AssemblyKeyNameAttribute ),
+                    [SupportedAssemblyAttributes.assembly_signature_key] = typeof( AssemblySignatureKeyAttribute )
                 };
 
                 supportedAssembliesMapping = new ReadOnlyDictionary<SupportedAssemblyAttributes, Type>( dict );

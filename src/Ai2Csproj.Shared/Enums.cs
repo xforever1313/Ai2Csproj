@@ -69,6 +69,12 @@ namespace Ai2Csproj.Shared
 
         cls_compliant = ( 2L << 14 ),
 
-        assembly_guid = ( 2L << 15 )
+        assembly_guid = ( 2L << 15 ),
+
+        assembly_key_file = ( 2L << 16 ),
+
+        assembly_key_name = ( 2L << 17 ),
+
+        assembly_signature_key = ( 2L << 18 )
     }
 }

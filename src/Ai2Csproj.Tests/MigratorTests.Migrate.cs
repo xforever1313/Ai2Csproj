@@ -66,6 +66,16 @@ $@"<Project Sdk=""Microsoft.NET.Sdk"">
     <AssemblyAttribute Include=""System.Runtime.InteropServices.GuidAttribute"">
         <_Parameter1>{defaultGuid}</_Parameter1>
     </AssemblyAttribute>
+    <AssemblyAttribute Include=""System.Reflection.AssemblyKeyFileAttribute"">
+        <_Parameter1>{defaultKeyFile}</_Parameter1>
+    </AssemblyAttribute>
+    <AssemblyAttribute Include=""System.Reflection.AssemblyKeyNameAttribute"">
+        <_Parameter1>{defaultKeyName}</_Parameter1>
+    </AssemblyAttribute>
+    <AssemblyAttribute Include=""System.Reflection.AssemblySignatureKeyAttribute"">
+        <_Parameter1>{defaultPublicKey}</_Parameter1>
+        <_Parameter2>{defaultCounterSignature}</_Parameter2>
+    </AssemblyAttribute>
   </ItemGroup>
 </Project>";
 

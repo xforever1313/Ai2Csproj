@@ -37,8 +37,11 @@ namespace Ai2Csproj.Tests
         private const bool defaultComVisible = true;
         private const string defaultTrademark = "My Trademark";
         private const bool defaultCls = false;
-
         private const string defaultGuid = "9ED54F84-A89D-4fcd-A854-44251E925F09";
+        private const string defaultKeyFile = "somekey.file";
+        private const string defaultKeyName = "somekeyname";
+        private const string defaultPublicKey = "publicKey";
+        private const string defaultCounterSignature = "somecountersignature";
 
         private const string defaultStartingCsProj =
 $@"<Project Sdk=""Microsoft.NET.Sdk"">
@@ -83,6 +86,9 @@ using System.Runtime.InteropServices;
 [assembly:ComVisible( {defaultComVisible} )]
 [assembly:CLSCompliant( {defaultCls} )]
 [assembly: Guid(""{defaultGuid}"")]
+[assembly: AssemblyKeyFile( ""{defaultKeyFile}"" )]
+[assembly: AssemblyKeyName( ""{defaultKeyName}"" )]
+[assembly: AssemblySignatureKey( ""{defaultPublicKey}"", ""{defaultCounterSignature}"" )]
 ";
         // ---------------- Test Helpers ----------------
 
