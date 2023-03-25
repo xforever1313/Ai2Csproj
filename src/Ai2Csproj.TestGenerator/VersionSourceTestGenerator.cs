@@ -21,7 +21,7 @@ using Microsoft.CodeAnalysis;
 namespace Ai2Csproj.TestGenerator
 {
     [Generator]
-    public sealed class BehaviorArgumentParsingTestGenerator : ISourceGenerator
+    public sealed class VersionSourceTestGenerator : ISourceGenerator
     {
         public void Initialize( GeneratorInitializationContext context )
         {
@@ -38,48 +38,22 @@ public sealed partial class ArgumentParsingTests
 {
     // ---------------- Tests ----------------
 
-    // -------- Behavior Tests --------
+    // -------- Versioning Source Tests --------
 "
             );
 
-            foreach( SupportedAssemblyAttributes supportedAttribute in Enum.GetValues( typeof( SupportedAssemblyAttributes ) ) )
+            foreach( VersionSource versionSource in Enum.GetValues( typeof( VersionSource ) ) )
             {
                 sourceBuilder.AppendLine(
 $@"
     [TestMethod]
-    public void TestMigrateFlag_{supportedAttribute}()
+    public void TestVersionSource_{versionSource}()
     {{
-        string[] args = new string[] {{ ""--{supportedAttribute}_behavior=migrate"" }};
+        string[] args = new string[] {{ ""--version_source={versionSource}"" }};
 
         var expectedConfig = new Ai2CsprojConfig
         {{
-            TypesToMigrate = {nameof( SupportedAssemblyAttributes )}.{supportedAttribute}
-        }};
-
-        DoArgumentParsingToConfigTest( args, expectedConfig );
-    }}
-
-    [TestMethod]
-    public void TestDeleteFlag_{supportedAttribute}()
-    {{
-        string[] args = new string[] {{ ""--{supportedAttribute}_behavior=delete"" }};
-
-        var expectedConfig = new Ai2CsprojConfig
-        {{
-            TypesToDelete = {nameof( SupportedAssemblyAttributes )}.{supportedAttribute}
-        }};
-
-        DoArgumentParsingToConfigTest( args, expectedConfig );
-    }}
-
-    [TestMethod]
-    public void TestLeaveFlag_{supportedAttribute}()
-    {{
-        string[] args = new string[] {{ ""--{supportedAttribute}_behavior=leave"" }};
-
-        var expectedConfig = new Ai2CsprojConfig
-        {{
-            TypesToLeave = {nameof( SupportedAssemblyAttributes )}.{supportedAttribute}
+            VersionSourceStrategy = {nameof(VersionSource)}.{versionSource}
         }};
 
         DoArgumentParsingToConfigTest( args, expectedConfig );
@@ -89,7 +63,7 @@ $@"
             }
 
             sourceBuilder.AppendLine( "}" );
-            context.AddSource( "ArgumentParsingTests.BehaviorParsingTests", sourceBuilder.ToString() );
+            context.AddSource( "ArgumentParsingTests.VersionSourceTests", sourceBuilder.ToString() );
         }
     }
 }

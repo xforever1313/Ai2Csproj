@@ -13,9 +13,10 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-using System;
 using System.Collections.Immutable;
 using System.Xml.Linq;
+using Ai2Csproj.Exceptions;
+using Ai2Csproj.Shared;
 
 namespace Ai2Csproj
 {
@@ -23,25 +24,33 @@ namespace Ai2Csproj
     {
         // ---------------- Fields ----------------
 
+        private readonly Ai2CsprojConfig config;
+
         private readonly HashSet<Type> existingTypes;
-        private readonly List<Tuple<Type, ImmutableArray<string>>> assemblyAttributes;
+        private readonly List<SupportedAttributeInfo> assemblyAttributes;
         private readonly List<Tuple<string, ImmutableArray<string>>> unsupportedAssemblyAttributes;
 
         private readonly List<string> errors;
 
+        private string? versionString;
+
         // ---------------- Constructor ----------------
 
-        public AssemblyInfoModel()
+        public AssemblyInfoModel( Ai2CsprojConfig config )
         {
+            this.config = config;
+
             this.existingTypes = new HashSet<Type>();
-            this.assemblyAttributes = new List<Tuple<Type, ImmutableArray<string>>>();
+            this.assemblyAttributes = new List<SupportedAttributeInfo>();
             this.unsupportedAssemblyAttributes = new List<Tuple<string, ImmutableArray<string>>>();
             this.errors = new List<string>();
+
+            this.versionString = null;
         }
 
         // ---------------- Functions ----------------
 
-        public void AddSupportedType( Type type, IEnumerable<string> parameters )
+        public void AddSupportedType( Type type, IEnumerable<string> parameters, MigrationBehavior behavior )
         {
             if( AssemblyAttributeMapping.IsMultiplePerAssemblyAllowed( type ) == false )
             {
@@ -59,14 +68,12 @@ namespace Ai2Csproj
                 errors.Add(
                     $"{type.FullName} can only have 1 and only 1 parameter, got: {parameters.Count()}."
                 );
+                return;
             }
 
-            var tuple = new Tuple<Type, ImmutableArray<string>>(
-                type,
-                parameters.ToImmutableArray()
-            );
+            var info = new SupportedAttributeInfo( type, parameters.ToImmutableArray(), behavior );
 
-            this.assemblyAttributes.Add( tuple );
+            this.assemblyAttributes.Add( info );
         }
 
         public void AddUnsupportedType( string type, IEnumerable<string> parameters )
@@ -79,11 +86,26 @@ namespace Ai2Csproj
             this.unsupportedAssemblyAttributes.Add( tuple );
         }
 
-        public void ThrowIfErrors()
+        public void Verify()
         {
             if( this.errors.Any() )
             {
                 throw new SyntaxTreeParseException( this.errors );
+            }
+
+            if( this.config.VersionSourceStrategy != VersionSource.exclude_version )
+            {
+                Type expectedType = AssemblyAttributeMapping.GetVersionSourceType( this.config.VersionSourceStrategy );
+
+                var foundAttribute = this.assemblyAttributes.FirstOrDefault( t => t.Type.Equals( expectedType ) );
+                if( foundAttribute == default )
+                {
+                    throw new MissingVersionSourceException(
+                        this.config.VersionSourceStrategy
+                    );
+                }
+
+                this.versionString = foundAttribute.Parameters.FirstOrDefault() ?? string.Empty;
             }
         }
 
@@ -93,14 +115,25 @@ namespace Ai2Csproj
 
             foreach( var attribute in this.assemblyAttributes )
             {
-                string? propertyGroupName = AssemblyAttributeMapping.TryGetPropertyGroupName( attribute.Item1 );
+                string? propertyGroupName = AssemblyAttributeMapping.TryGetPropertyGroupName( attribute.Type );
                 if( propertyGroupName is null )
+                {
+                    continue;
+                }
+                else if( attribute.MigrationBehavior != MigrationBehavior.migrate )
                 {
                     continue;
                 }
 
                 element.Add(
-                    new XElement( propertyGroupName, attribute.Item2.First() )
+                    new XElement( propertyGroupName, attribute.Parameters.First() )
+                );
+            }
+
+            if( this.versionString is not null )
+            {
+                element.Add(
+                    new XElement( "Version", this.versionString )
                 );
             }
 
@@ -143,13 +176,17 @@ namespace Ai2Csproj
 
             foreach( var attribute in this.assemblyAttributes )
             {
-                string? propertyGroupName = AssemblyAttributeMapping.TryGetPropertyGroupName( attribute.Item1 );
+                string? propertyGroupName = AssemblyAttributeMapping.TryGetPropertyGroupName( attribute.Type );
                 if( propertyGroupName is not null )
                 {
                     continue;
                 }
+                else if( attribute.MigrationBehavior != MigrationBehavior.migrate )
+                {
+                    continue;
+                }
 
-                AddElement( attribute.Item1.FullName, attribute.Item2 );
+                AddElement( attribute.Type.FullName, attribute.Parameters );
             }
 
             foreach( var attribute in this.unsupportedAssemblyAttributes )
@@ -163,6 +200,30 @@ namespace Ai2Csproj
             }
 
             return element;
+        }
+
+        private class SupportedAttributeInfo
+        {
+            // ---------------- Constructor ----------------
+
+            public SupportedAttributeInfo(
+                Type type,
+                ImmutableArray<string> parameters,
+                MigrationBehavior migrationBehavior
+            )
+            {
+                this.Type = type;
+                this.Parameters = parameters;
+                this.MigrationBehavior = migrationBehavior;
+            }
+
+            // ---------------- Properties ----------------
+
+            public Type Type { get; private set; }
+
+            public ImmutableArray<string> Parameters { get; private set; }
+
+            public MigrationBehavior MigrationBehavior { get; private set; }
         }
     }
 }

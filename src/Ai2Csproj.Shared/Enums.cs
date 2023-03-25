@@ -36,6 +36,32 @@ namespace Ai2Csproj.Shared
         leave
     }
 
+    internal enum VersionSource
+    {
+        /// <summary>
+        /// Don't add a version element to the csproj.
+        /// </summary>
+        exclude_version,
+
+        /// <summary>
+        /// Add a version tag using the information
+        /// in the assembly version.
+        /// </summary>
+        use_assembly_version,
+
+        /// <summary>
+        /// Add a version tag using the information
+        /// in the assembly file version.
+        /// </summary>
+        use_file_version,
+        
+        /// <summary>
+        /// Add a version tag using the information
+        /// in the assembly informational version.
+        /// </summary>
+        use_informational_version
+    }
+
 #if NET6_0_OR_GREATER
     [Flags]
 #endif

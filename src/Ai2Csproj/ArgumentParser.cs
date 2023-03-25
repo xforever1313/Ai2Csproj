@@ -13,6 +13,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+using System.Reflection;
 using Ai2Csproj.Shared;
 using Mono.Options;
 
@@ -91,6 +92,28 @@ namespace Ai2Csproj
                     "no_backup",
                     "If specified, backups of the files that will be changed will not be created.",
                     v => this.Config = this.Config with { DeleteBackup = v is not null }
+                },
+                {
+                    "version_source=",
+                    "If specified, this creates a Version tag inside of the csproj.  " +
+                    "However, the version number can come from a number of attriutes.  " +
+                    "This selects which assembly attribute to grab the version from.  " +
+                    $"{VersionSource.exclude_version} to not include a Version tag in the csproj.  " +
+                    $"{VersionSource.use_assembly_version} to use the {nameof( AssemblyVersionAttribute )} for the Version tag in the csproj.  " +
+                    $"{VersionSource.use_file_version} to use the {nameof( AssemblyFileVersionAttribute)} for the Version tag in the csproj.  " +
+                    $"{VersionSource.use_informational_version} to use the {nameof( AssemblyInformationalVersionAttribute )} for the Version tag in the csproj.",
+                    v =>
+                    {
+                        if( Enum.TryParse( v, out VersionSource versionSource ) == false )
+                        {
+                            throw new ArgumentException(
+                                $"Unknown value for version_source: {v}",
+                                "version_source"
+                            );
+                        }
+
+                        this.Config = this.Config with { VersionSourceStrategy = versionSource };
+                    }
                 }
             };
             

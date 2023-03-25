@@ -13,8 +13,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-using System.Xml.Linq;
-
 namespace Ai2Csproj.Tests
 {
     [TestClass]
@@ -92,7 +90,7 @@ using System.Runtime.InteropServices;
 ";
         // ---------------- Test Helpers ----------------
 
-        private void DoMigrationTest(
+        private static void DoMigrationTest(
             Ai2CsprojConfig config,
             string startingCsProj,
             string startingAssemblyInfo,
@@ -100,14 +98,13 @@ using System.Runtime.InteropServices;
             string expectedAssemblyInfo
         )
         {
-            var uut = new Migrator( config );
-            MigrationResult result = uut.Migrate( startingCsProj, startingAssemblyInfo );
-
-            XDocument expectedCsProjXml = XDocument.Parse( expectedCsProj );
-            XDocument actualCsProjXml = XDocument.Parse( result.CsprojContents );
-
-            Assert.AreEqual( expectedCsProjXml.ToString(), actualCsProjXml.ToString() );
-            Assert.AreEqual( expectedAssemblyInfo, result.AssemblyInfoContents );
+            CommonTests.DoMigrationTest(
+                config,
+                startingCsProj,
+                startingAssemblyInfo,
+                expectedCsProj,
+                expectedAssemblyInfo
+            );
         }
 
         private static Ai2CsprojConfig GetConfigWithAllDeleted( SupportedAssemblyAttributes? excludedValues )

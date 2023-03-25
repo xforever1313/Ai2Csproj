@@ -55,7 +55,7 @@ namespace Ai2Csproj
         /// </remarks>
         internal MigrationResult Migrate( string csProjContents, string assemblyInfoContents )
         {
-            var model = new AssemblyInfoModel();
+            var model = new AssemblyInfoModel( this.config );
 
             SyntaxTree syntaxTree = CSharpSyntaxTree.ParseText( assemblyInfoContents );
             CompilationUnitSyntax root = syntaxTree.GetCompilationUnitRoot();
@@ -108,10 +108,7 @@ namespace Ai2Csproj
                         }
 
                         MigrationBehavior behavior = this.config.GetMigrationBehavior( supportedAssembly.Value );
-                        if( behavior == MigrationBehavior.migrate )
-                        {
-                            model.AddSupportedType( type, attributeParameters );
-                        }
+                        model.AddSupportedType( type, attributeParameters, behavior );
 
                         if(
                             ( behavior != MigrationBehavior.migrate ) &&
@@ -123,12 +120,14 @@ namespace Ai2Csproj
                     }
                 }
 
-                if( attributesToKeep.Any())
+                if( attributesToKeep.Any() )
                 {
                     var newAttributeList = attributeList.WithAttributes( attributesToKeep );
                     attributeListsToKeep = attributeListsToKeep.Add( newAttributeList );
                 }
             }
+
+            model.Verify();
 
             root = root.WithAttributeLists( attributeListsToKeep );
 

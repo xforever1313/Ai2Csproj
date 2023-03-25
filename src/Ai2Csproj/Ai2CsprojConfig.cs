@@ -41,6 +41,8 @@ namespace Ai2Csproj
 
         public bool MigrateUnsupportedTypes { get; init; } = false;
 
+        public VersionSource VersionSourceStrategy { get; init; } = VersionSource.exclude_version;
+
         public SupportedAssemblyAttributes TypesToDelete { get; init; }
 
         public SupportedAssemblyAttributes TypesToMigrate { get; init; }

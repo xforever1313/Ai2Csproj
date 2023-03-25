@@ -33,6 +33,8 @@ namespace Ai2Csproj
 
         private static readonly IReadOnlyDictionary<SupportedAssemblyAttributes, Type> supportedAssembliesMapping;
 
+        private static readonly IReadOnlyDictionary<VersionSource, Type> versionSourceMapping;
+
         // ---------------- Constructor ----------------
 
         static AssemblyAttributeMapping()
@@ -83,6 +85,17 @@ namespace Ai2Csproj
 
                 supportedAssembliesMapping = new ReadOnlyDictionary<SupportedAssemblyAttributes, Type>( dict );
             }
+
+            {
+                var dict = new Dictionary<VersionSource, Type>
+                {
+                    [VersionSource.use_assembly_version] = typeof( AssemblyVersionAttribute ),
+                    [VersionSource.use_file_version] = typeof( AssemblyFileVersionAttribute ),
+                    [VersionSource.use_informational_version] = typeof( AssemblyInformationalVersionAttribute )
+                };
+
+                versionSourceMapping = new ReadOnlyDictionary<VersionSource, Type>( dict );
+            }
         }
 
         // ---------------- Functions ----------------
@@ -124,6 +137,19 @@ namespace Ai2Csproj
             }
 
             return null;
+        }
+
+        public static Type GetVersionSourceType( VersionSource versionSource )
+        {
+            if( versionSource == VersionSource.exclude_version )
+            {
+                throw new ArgumentException(
+                    $"{versionSource} does not have a type mapped to it, try another type.",
+                    nameof( versionSource )
+                );
+            }
+
+            return versionSourceMapping[versionSource];
         }
 
         public static SupportedAssemblyAttributes? TryGetAssemblyAttributeFromType( Type type )
