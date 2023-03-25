@@ -22,7 +22,7 @@ public class TestArguments
 {
     // ---------------- Fields ----------------
 
-    public static readonly string CoverageFilter = "+[*]Ai2Csproj*";
+    public static readonly string CoverageFilter = "+[Ai2Csproj]* -[Ai2CsProj.Tests]* -[Ai2CsProj.TestGenerator]*";
 
     // ---------------- Constructor ----------------
 
