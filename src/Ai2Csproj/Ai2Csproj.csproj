@@ -47,4 +47,6 @@
 	</AssemblyAttribute>
   </ItemGroup>
 
+  <Import Project="..\Ai2Csproj.Shared\Ai2Csproj.Shared.projitems" Label="Shared" />
+
 </Project>

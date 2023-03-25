@@ -13,6 +13,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LibSethCS", "..\SethCS\LibS
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Seth.Analyzer", "..\SethCS\Seth.Analyzer\Seth.Analyzer.csproj", "{CE4C0605-4E8C-4060-9FD7-AA30B9CA7CA2}"
 EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Ai2Csproj.Shared", "Ai2Csproj.Shared\Ai2Csproj.Shared.shproj", "{1FECAA98-89CF-4E26-93D2-4671B55C34F5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -40,7 +42,9 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		Ai2Csproj.Shared\Ai2Csproj.Shared.projitems*{1fecaa98-89cf-4e26-93d2-4671b55c34f5}*SharedItemsImports = 13
 		..\SethCS\SethCS\SethCS.projitems*{52089274-b9a2-4a47-a221-c321dee1ce7f}*SharedItemsImports = 13
+		Ai2Csproj.Shared\Ai2Csproj.Shared.projitems*{6677951c-bfe0-41ac-9863-9965c46a7101}*SharedItemsImports = 5
 		..\SethCS\SethCS\SethCS.projitems*{f45568aa-bd9a-4035-9338-40597b58dbeb}*SharedItemsImports = 5
 	EndGlobalSection
 EndGlobal

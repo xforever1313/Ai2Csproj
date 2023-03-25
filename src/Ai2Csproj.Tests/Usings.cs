@@ -14,3 +14,4 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 global using Microsoft.VisualStudio.TestTools.UnitTesting;
+global using Ai2Csproj.Shared;
