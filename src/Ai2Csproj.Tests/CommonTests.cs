@@ -19,6 +19,8 @@ namespace Ai2Csproj.Tests
 {
     internal static class CommonTests
     {
+        // ---------------- Functions ----------------
+
         public static void DoMigrationTest(
             Ai2CsprojConfig config,
             string startingCsProj,

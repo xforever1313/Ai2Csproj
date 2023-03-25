@@ -133,27 +133,30 @@ namespace Ai2Csproj
 
             // If we contain anything other than using statements
             // we want to keep the file as-is.
-            bool safeToDelete = true;
-            if( root.AttributeLists.Any() )
+            bool safeToDelete = this.config.DeleteOldAssemblyInfo;
+            if( safeToDelete )
             {
-                safeToDelete = false;
-            }
-            else if( root.Externs.Any() )
-            {
-                safeToDelete = false;
-            }
-            else if( root.Members.Any() )
-            {
-                safeToDelete = false;
-            }
-            foreach( UsingDirectiveSyntax usingStatement in root.Usings )
-            {
-                // Do not delete if there are global using statements,
-                // as those impact the entire assembly.
-                // We'll need to keep the file instead.
-                if( usingStatement.GlobalKeyword.ValueText == "global" )
+                if( root.AttributeLists.Any() )
                 {
                     safeToDelete = false;
+                }
+                else if( root.Externs.Any() )
+                {
+                    safeToDelete = false;
+                }
+                else if( root.Members.Any() )
+                {
+                    safeToDelete = false;
+                }
+                foreach( UsingDirectiveSyntax usingStatement in root.Usings )
+                {
+                    // Do not delete if there are global using statements,
+                    // as those impact the entire assembly.
+                    // We'll need to keep the file instead.
+                    if( usingStatement.GlobalKeyword.ValueText == "global" )
+                    {
+                        safeToDelete = false;
+                    }
                 }
             }
 
@@ -172,8 +175,11 @@ namespace Ai2Csproj
 
         public void WriteFiles( MigrationResult result )
         {
-            BackupFile( csProjFile );
-            BackupFile( assemblyInfoFile );
+            if( this.config.DeleteBackup == false )
+            {
+                BackupFile( csProjFile );
+                BackupFile( assemblyInfoFile );
+            }
 
             WriteFile( csProjFile, result.CsprojContents );
             WriteFile( assemblyInfoFile, result.AssemblyInfoContents );
@@ -258,7 +264,7 @@ namespace Ai2Csproj
         private void BackupFile( FileInfo fileInfo )
         {
             FileInfo original = fileInfo;
-            FileInfo destination = new FileInfo( $"{this.csProjFile.FullName}.old" );
+            FileInfo destination = new FileInfo( $"{original.FullName}.old" );
 
             Console.WriteLine( $"Backing up '{original.FullName}' to '{destination.FullName}'." );
 
