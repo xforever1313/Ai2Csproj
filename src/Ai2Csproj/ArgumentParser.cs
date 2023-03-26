@@ -106,7 +106,7 @@ namespace Ai2Csproj
                     {
                         if( Enum.TryParse( v, out VersionSource versionSource ) == false )
                         {
-                            throw new ArgumentException(
+                            throw new OptionException(
                                 $"Unknown value for version_source: {v}",
                                 "version_source"
                             );
@@ -133,8 +133,9 @@ namespace Ai2Csproj
                     {
                         if( Enum.TryParse( value, out MigrationBehavior migrateBehavior ) == false )
                         {
-                            throw new ArgumentException(
-                                $"Unknown value for behavior attribute: {value}"
+                            throw new OptionException(
+                                $"Unknown value for {supportedAttribute}_behavior: {value}",
+                                $"{supportedAttribute}_behavior"
                             );
                         }
                         else if( migrateBehavior == MigrationBehavior.migrate )

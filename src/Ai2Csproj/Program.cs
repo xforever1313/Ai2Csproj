@@ -20,6 +20,20 @@ using SethCS.IO;
 
 internal class Program
 {
+    // ---------------- Fields ----------------
+
+    internal const int SuccessExitCode = 0;
+
+    internal const int CliArgsErrorExitCode = 1;
+
+    internal const int SyntaxParsingErrorExitCode = 5;
+
+    internal const int OptionsValidationErrorExitCode = 2;
+
+    internal const int FatalErrorExitCode = 0;
+
+    // ---------------- Functions ----------------
+
     internal static int Main( string[] args )
     {
         try
@@ -32,27 +46,27 @@ internal class Program
                 if( argParser.ShowHelp )
                 {
                     argParser.WriteHelp( Console.Out );
-                    return 0;
+                    return SuccessExitCode;
                 }
                 else if( argParser.ShowCredits )
                 {
                     PrintCredits();
-                    return 0;
+                    return SuccessExitCode;
                 }
                 else if( argParser.ShowLicense )
                 {
                     PrintLicense();
-                    return 0;
+                    return SuccessExitCode;
                 }
                 else if( argParser.ShowVersion )
                 {
                     PrintVersion();
-                    return 0;
+                    return SuccessExitCode;
                 }
                 else if( argParser.ShowSupportedTypes )
                 {
                     PrintSupportedTypes();
-                    return 0;
+                    return SuccessExitCode;
                 }
 
                 config = argParser.Config;
@@ -60,30 +74,29 @@ internal class Program
 
             Run( config );
 
-            return 0;
+            return SuccessExitCode;
         }
         catch( OptionException e )
         {
             Console.WriteLine( "Error when parsing options:" );
-            Console.WriteLine( e.ToString() );
-            return 1;
+            Console.WriteLine( e.Message );
+            return CliArgsErrorExitCode;
         }
         catch( SyntaxTreeParseException e )
         {
             Console.WriteLine( e.Message );
-            return 5;
+            return SyntaxParsingErrorExitCode;
         }
         catch( ListedValidationException e )
         {
-            Console.WriteLine( "Error when validating options:" );
             Console.WriteLine( e.Message );
-            return 2;
+            return OptionsValidationErrorExitCode;
         }
         catch( Exception e )
         {
             Console.WriteLine( "FATAL ERROR:" );
             Console.WriteLine( e );
-            return -1;
+            return FatalErrorExitCode;
         }
     }
 

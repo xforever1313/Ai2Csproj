@@ -60,19 +60,22 @@ namespace Ai2Csproj
                     return;
                 }
             }
-            else if(
-                AssemblyAttributeMapping.IsOnlyOneParameterAllowed( type ) &&
-                ( parameters.Count() != 1 )
-            )
+
+            int? expectedArgs = AssemblyAttributeMapping.TryGetExectedNumberOfParameters( type );
+            if( expectedArgs is not null )
             {
-                errors.Add(
-                    $"{type.FullName} can only have 1 and only 1 parameter, got: {parameters.Count()}."
-                );
-                return;
+                if( parameters.Count() != expectedArgs )
+                {
+                    errors.Add(
+                        $"{type.FullName} can only have {expectedArgs} and only {expectedArgs} parameter(s), got: {parameters.Count()}."
+                    );
+                    return;
+                }
             }
 
             var info = new SupportedAttributeInfo( type, parameters.ToImmutableArray(), behavior );
 
+            this.existingTypes.Add( type );
             this.assemblyAttributes.Add( info );
         }
 

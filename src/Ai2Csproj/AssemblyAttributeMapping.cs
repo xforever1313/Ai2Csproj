@@ -234,16 +234,28 @@ namespace Ai2Csproj
             return true;
         }
 
-        public static bool IsOnlyOneParameterAllowed( Type type )
+        /// <returns>
+        /// Null if we can't determine the number of parameters;
+        /// unsupported types will return null.
+        /// </returns>
+        public static int? TryGetExectedNumberOfParameters( Type type )
         {
-            // All of our known attributes only allow one paramter.
-            // *Technically*, NeutralResourcesLanguageAttribute has a Constructor
-            // with 2 parameters, but it probably won't work at compile time
-            // since its an interface.
-            //
-            // All other types, we can't make assumptions, assume they're allowed
+            if( type.Equals( typeof( AssemblySignatureKeyAttribute ) ))
+            {
+                return 2;
+            }
+            else if( supportedAssembliesMapping.Values.Contains( type ) )
+            {
+                // All of our ither known attributes only allow one paramter.
+                // *Technically*, NeutralResourcesLanguageAttribute has a Constructor
+                // with 2 parameters, but it probably won't work at compile time
+                // since its an interface.
+                return 1;
+            }
+
+            // All other types are unsupported, we can't make assumptions, assume they're allowed
             // any number of parameters.
-            return supportedAssembliesMapping.Values.Contains( type );
+            return null;
         }
     }
 }

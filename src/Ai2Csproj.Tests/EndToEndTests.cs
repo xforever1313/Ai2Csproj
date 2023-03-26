@@ -20,6 +20,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using Microsoft.VisualStudio.TestPlatform.ObjectModel;
 
 namespace Ai2Csproj.Tests
 {
@@ -360,6 +361,107 @@ using System.Runtime.InteropServices;
         }
 
         /// <summary>
+        /// If the properties folder is empty,
+        /// it should no longer exist.
+        /// </summary>
+        [TestMethod]
+        public void TestDeletePropertiesFolder()
+        {
+            const string expectedCsProj =
+$@"<Project Sdk=""Microsoft.NET.Sdk"">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <Copyright>{defaultCopyRight}</Copyright>
+    <AssemblyVersion>{defaultAssemblyVersion}</AssemblyVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <AssemblyAttribute Include=""System.Reflection.AssemblyTrademarkAttribute"">
+        <_Parameter1>{defaultTrademark}</_Parameter1>
+    </AssemblyAttribute>
+  </ItemGroup>
+</Project>
+";
+
+            const string? expectedAssemblyInfo = null;
+
+            var testConfig = new TestConfig( nameof( TestDeletePropertiesFolder ) )
+            {
+                Arguments = new string[]
+                {
+                    "--no_backup",
+                    "--delete_old_assembly_info"
+                },
+                ExpectBackups = false,
+                OriginalCsProj = defaultOriginalCsProj,
+                OriginalAssemblyInfo = defaultOriginalAssemblyInfo,
+                ExpectedCsProj = expectedCsProj,
+                ExpectedAssemblyInfo = expectedAssemblyInfo,
+                ExpectedExitCode = 0
+            };
+
+            RunTest( testConfig );
+        }
+
+        /// <summary>
+        /// If the properties folder is empty,
+        /// it should no longer exist.
+        /// </summary>
+        [TestMethod]
+        public void DontDeletePropertiesFolderIfNotEmptyTest()
+        {
+            const string expectedCsProj =
+$@"<Project Sdk=""Microsoft.NET.Sdk"">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <Copyright>{defaultCopyRight}</Copyright>
+    <AssemblyVersion>{defaultAssemblyVersion}</AssemblyVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <AssemblyAttribute Include=""System.Reflection.AssemblyTrademarkAttribute"">
+        <_Parameter1>{defaultTrademark}</_Parameter1>
+    </AssemblyAttribute>
+  </ItemGroup>
+</Project>
+";
+
+            const string? expectedAssemblyInfo = null;
+
+            var testConfig = new TestConfig( nameof( DontDeletePropertiesFolderIfNotEmptyTest ) )
+            {
+                Arguments = new string[]
+                {
+                    "--no_backup",
+                    "--delete_old_assembly_info"
+                },
+                ExpectBackups = false,
+                WriteExtraFileInPropertiesFolder = true,
+                OriginalCsProj = defaultOriginalCsProj,
+                OriginalAssemblyInfo = defaultOriginalAssemblyInfo,
+                ExpectedCsProj = expectedCsProj,
+                ExpectedAssemblyInfo = expectedAssemblyInfo,
+                ExpectedExitCode = 0
+            };
+
+            RunTest( testConfig );
+        }
+
+        /// <summary>
         /// Settings include:
         /// - Everything is migrated.
         /// - Version source is "do nothing".
@@ -515,6 +617,119 @@ using System.Runtime.InteropServices;
             RunTest( testConfig );
         }
 
+        [TestMethod]
+        public void DoMultipleAttributesTest()
+        {
+            const string originalAssemblyInfo =
+$@"using System.Reflection;
+using System.Resources;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+
+[assembly: AssemblyCopyright( ""{defaultCopyRight}"" )]
+[assembly: AssemblyCopyright( ""ANOTHER COPYRIGHT!"" )]
+";
+
+            var testConfig = new TestConfig( nameof( DoMultipleAttributesTest ) )
+            {
+                // State should not change, backups should not be created.
+                ExpectBackups = false,
+                OriginalCsProj = defaultOriginalCsProj,
+                OriginalAssemblyInfo = originalAssemblyInfo,
+
+                // State should not change, expected should match original.
+                ExpectedCsProj = defaultOriginalCsProj,
+                ExpectedAssemblyInfo = originalAssemblyInfo,
+                ExpectedExitCode = Program.SyntaxParsingErrorExitCode
+            };
+
+            RunTest( testConfig );
+        }
+
+        [TestMethod]
+        public void DoMultipleArgumentsTest()
+        {
+            const string originalAssemblyInfo =
+$@"using System.Reflection;
+using System.Resources;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+
+[assembly: AssemblyCopyright( ""{defaultCopyRight}"", ""Incorrect Second Argument"" )]
+";
+
+            var testConfig = new TestConfig( nameof( DoMultipleArgumentsTest ) )
+            {
+                // State should not change, backups should not be created.
+                ExpectBackups = false,
+                OriginalCsProj = defaultOriginalCsProj,
+                OriginalAssemblyInfo = originalAssemblyInfo,
+
+                // State should not change, expected should match original.
+                ExpectedCsProj = defaultOriginalCsProj,
+                ExpectedAssemblyInfo = originalAssemblyInfo,
+                ExpectedExitCode = Program.SyntaxParsingErrorExitCode
+            };
+
+            RunTest( testConfig );
+        }
+
+        [TestMethod]
+        public void DoMissingArgumentsTest()
+        {
+            const string originalAssemblyInfo =
+$@"using System.Reflection;
+using System.Resources;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+
+[assembly: AssemblyCopyright()]
+";
+
+            var testConfig = new TestConfig( nameof( DoMissingArgumentsTest ) )
+            {
+                // State should not change, backups should not be created.
+                ExpectBackups = false,
+                OriginalCsProj = defaultOriginalCsProj,
+                OriginalAssemblyInfo = originalAssemblyInfo,
+
+                // State should not change, expected should match original.
+                ExpectedCsProj = defaultOriginalCsProj,
+                ExpectedAssemblyInfo = originalAssemblyInfo,
+                ExpectedExitCode = Program.SyntaxParsingErrorExitCode
+            };
+
+            RunTest( testConfig );
+        }
+
+        [TestMethod]
+        public void DoMissingArgumentsForAssemblyKeySignatureTest()
+        {
+            const string originalAssemblyInfo =
+$@"using System.Reflection;
+using System.Resources;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+
+[assembly: AssemblySignatureKeyAttribute( ""value1"" )]
+";
+
+            var testConfig = new TestConfig( nameof( DoMissingArgumentsTest ) )
+            {
+                // State should not change, backups should not be created.
+                ExpectBackups = false,
+                OriginalCsProj = defaultOriginalCsProj,
+                OriginalAssemblyInfo = originalAssemblyInfo,
+
+                // State should not change, expected should match original.
+                ExpectedCsProj = defaultOriginalCsProj,
+                ExpectedAssemblyInfo = originalAssemblyInfo,
+                ExpectedExitCode = Program.SyntaxParsingErrorExitCode
+            };
+
+            RunTest( testConfig );
+        }
+
         /// <summary>
         /// Settings include:
         /// - Dry run is enabled.
@@ -528,6 +743,22 @@ using System.Runtime.InteropServices;
             };
 
             DoArgumentsDoNotChangeStateTest( args, nameof( TestWithDryRunEnabled ) );
+        }
+
+        /// <summary>
+        /// Settings include:
+        /// - Dry run is enabled.
+        /// </summary>
+        [TestMethod]
+        public void TestWithDryRunAndDeleteAssemblyInfoEnabled()
+        {
+            var args = new string[]
+            {
+                "--dry_run",
+                "--delete_old_assembly_info"
+            };
+
+            DoArgumentsDoNotChangeStateTest( args, nameof( TestWithDryRunAndDeleteAssemblyInfoEnabled ) );
         }
 
         [TestMethod]
@@ -585,6 +816,76 @@ using System.Runtime.InteropServices;
             DoArgumentsDoNotChangeStateTest( args, nameof( TestWithListSupportedTypesArgument ) );
         }
 
+        [TestMethod]
+        public void MissingCsProjTest()
+        {
+            // Setup
+            var args = new string[]
+            {
+                $"--project_path=does_not_exist.csproj",
+                // Cheat a little bit, the validation logic doesn't look
+                // inside, it just checks to see if it exists.
+                $"--assembly_info_path={typeof( EndToEndTests ).Assembly.Location}"
+            };
+
+            // Act
+            int exitCode = Program.Main( args );
+
+            // Check
+            Assert.AreEqual( Program.OptionsValidationErrorExitCode, exitCode );
+        }
+
+        [TestMethod]
+        public void MissingAssemblyInfoTest()
+        {
+            // Setup
+            var args = new string[]
+            {
+                // Cheat a little bit, the validation logic doesn't look
+                // inside, it just checks to see if it exists.
+                $"--project_path={typeof( EndToEndTests ).Assembly.Location}",
+                $"--assembly_info_path=does_not_exist.cs"
+            };
+
+            // Act
+            int exitCode = Program.Main( args );
+
+            // Check
+            Assert.AreEqual( Program.OptionsValidationErrorExitCode, exitCode );
+        }
+
+        [TestMethod]
+        public void InvalidBehaviorOption()
+        {
+            // Setup
+            var args = new string[]
+            {
+                "--assembly_company_behavior=invalid"
+            };
+
+            // Act
+            int exitCode = Program.Main( args );
+
+            // Check
+            Assert.AreEqual( Program.CliArgsErrorExitCode, exitCode );
+        }
+
+        [TestMethod]
+        public void InvalidVersionSourceOption()
+        {
+            // Setup
+            var args = new string[]
+            {
+                "--version_source=invalid"
+            };
+
+            // Act
+            int exitCode = Program.Main( args );
+
+            // Check
+            Assert.AreEqual( Program.CliArgsErrorExitCode, exitCode );
+        }
+
         // ---------------- Test Helpers ----------------
 
         private static void DoArgumentsDoNotChangeStateTest( string[] args, string testName )
@@ -614,6 +915,7 @@ using System.Runtime.InteropServices;
             var directory = new DirectoryInfo(
                 Path.Combine( currentDirectory, config.TestName )
             );
+            var propertiesDirectory = new DirectoryInfo( Path.Combine( directory.FullName, "Properties" ) );
 
             try
             {
@@ -624,9 +926,17 @@ using System.Runtime.InteropServices;
                 }
 
                 Directory.CreateDirectory( directory.FullName );
-                Directory.CreateDirectory( Path.Combine( directory.FullName, "Properties" ) );
+                Directory.CreateDirectory( propertiesDirectory.FullName );
                 FileInfo csProj = new FileInfo( Path.Combine( directory.FullName, $"{config.TestName}.csproj" ) );
-                FileInfo assemblyInfo = new FileInfo( Path.Combine( directory.FullName, "Properties", "AssemblyInfo.cs" ) );
+                FileInfo assemblyInfo = new FileInfo( Path.Combine( propertiesDirectory.FullName, "AssemblyInfo.cs" ) );
+
+                if( config.WriteExtraFileInPropertiesFolder )
+                {
+                    File.WriteAllText(
+                        Path.Combine( propertiesDirectory.FullName, "Hello.txt" ),
+                        "Hello"
+                    );
+                }
 
                 File.WriteAllText( csProj.FullName, config.OriginalCsProj );
                 File.WriteAllText( assemblyInfo.FullName, config.OriginalAssemblyInfo );
@@ -666,6 +976,15 @@ using System.Runtime.InteropServices;
                 if( config.ExpectedAssemblyInfo is null )
                 {
                     Assert.IsFalse( assemblyInfo.Exists );
+
+                    // We should delete the Properties folder if it is empty.
+                    if(
+                        ( config.WriteExtraFileInPropertiesFolder == false ) &&
+                        ( config.ExpectBackups == false )
+                    )
+                    {
+                        Assert.IsFalse( propertiesDirectory.Exists );
+                    }
                 }
                 else
                 {
@@ -704,6 +1023,8 @@ using System.Runtime.InteropServices;
             public string TestName { get; private set; }
 
             public bool ExpectBackups { get; init; } = true;
+
+            public bool WriteExtraFileInPropertiesFolder { get; init; } = false;
 
             public string OriginalCsProj { get; init; } = "";
 

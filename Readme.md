@@ -47,6 +47,6 @@ Note that if a ```--version_source``` is specified, the attribute that it copied
 * When writing out the modified csproj or AssemblyInfo file, code formatting and whitespace is not guaranteed.  While the contents of the file should stay the same, the whitespace may look different post-migration.
 * When parsing an AssemblyInfo, if you have your own assembly attribute that just so happens to match the same name as one of the supported assembly attributes, that will be removed and migrated to the csproj.  The way to have the tool not do this is by passing in the appropriate "leave" argument for that attribute so the tool leaves that assembly attribute alone.
 * Comments within the AssemblyInfo are not migrated to the .csproj.
-* If your AssemblyInfo.cs file has a syntax error, ai2csproj probably won't work.  Make sure your project compiles before running ai2csproj.
+* If your AssemblyInfo.cs file has a syntax error, ai2csproj may or may not work.  Make sure your project compiles before running ai2csproj.
 * When using a version source that copies from AssemblyVersion or FileVersion, the attribute's values are copied _exactly_, even if the value is invalid for the ```<Version>``` property.
 * This tool doesn't work great with preprocessor defines.  Whatever attribute is excluded from the preprocessor will be removed completely when the tool is run.  Someday, it may be nice to somehow reconstruct the preprocessor logic in the .csproj, but that's not supported right now.

@@ -345,15 +345,16 @@ namespace Ai2Csproj
                 }
 
                 DirectoryInfo? directory = file.Directory;
-                if(
-                    ( directory is not null ) &&
-                    ( directory.EnumerateFiles().Any() == false )
-                )
+                if( directory is not null )
                 {
-                    Console.WriteLine( $"Directory, '{directory.FullName}' is empty, deleting." );
-                    if( config.DryRun == false )
+                    directory.Refresh();
+                    if( directory.EnumerateFiles().Any() == false )
                     {
-                        Directory.Delete( directory.FullName );
+                        Console.WriteLine( $"Directory, '{directory.FullName}' is empty, deleting." );
+                        if( config.DryRun == false )
+                        {
+                            Directory.Delete( directory.FullName );
+                        }
                     }
                 }
             }
