@@ -141,10 +141,230 @@ $@"<Project Sdk=""Microsoft.NET.Sdk"">
         }
 
         [TestMethod]
+        public void MigratePropertyGroupAndRemoveGenerateAssemblyInfoTest()
+        {
+            const string originalCsProj = 
+@"<Project Sdk=""Microsoft.NET.Sdk"">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+  </PropertyGroup>
+</Project>
+";
+            const string originalAssemblyInfo =
+$@"using System.Reflection;
+using System.Resources;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+
+[assembly: AssemblyCompany( ""{defaultCompany}"" )]
+[assembly: AssemblyConfiguration( ""{defaultConfiguration}"" )]
+[assembly: AssemblyCopyright( ""{defaultCopyRight}"" )]
+";
+
+            const string expectedCsProj =
+$@"<Project Sdk=""Microsoft.NET.Sdk"">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+  <PropertyGroup>
+    <Company>{defaultCompany}</Company>
+    <Configuration>{defaultConfiguration}</Configuration>
+    <Copyright>{defaultCopyRight}</Copyright>
+  </PropertyGroup>
+</Project>";
+
+            // Setup
+            var config = new Ai2CsprojConfig
+            {
+                // Default should be to migrate all.
+                DeleteOldAssemblyInfo = true
+            };
+
+            // Act / Check
+            DoMigrationTest(
+                config,
+                originalCsProj,
+                originalAssemblyInfo,
+                expectedCsProj,
+                ""
+            );
+        }
+
+        [TestMethod]
+        public void MigratePropertyGroupAndRemovePropertyGroupWithJustGenerateAssemblyInfoTest()
+        {
+            const string originalCsProj = 
+@"<Project Sdk=""Microsoft.NET.Sdk"">
+  <PropertyGroup>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+  </PropertyGroup>
+</Project>
+";
+            const string originalAssemblyInfo =
+$@"using System.Reflection;
+using System.Resources;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+
+[assembly: AssemblyCompany( ""{defaultCompany}"" )]
+[assembly: AssemblyConfiguration( ""{defaultConfiguration}"" )]
+[assembly: AssemblyCopyright( ""{defaultCopyRight}"" )]
+";
+
+            const string expectedCsProj =
+$@"<Project Sdk=""Microsoft.NET.Sdk"">
+  <PropertyGroup>
+    <Company>{defaultCompany}</Company>
+    <Configuration>{defaultConfiguration}</Configuration>
+    <Copyright>{defaultCopyRight}</Copyright>
+  </PropertyGroup>
+</Project>";
+
+            // Setup
+            var config = new Ai2CsprojConfig
+            {
+                // Default should be to migrate all.
+                DeleteOldAssemblyInfo = true
+            };
+
+            // Act / Check
+            DoMigrationTest(
+                config,
+                originalCsProj,
+                originalAssemblyInfo,
+                expectedCsProj,
+                ""
+            );
+        }
+
+        [TestMethod]
         public void MigrateItemGroupToEmptyCsProjTest()
         {
             const string originalCsProj = 
 @"<Project Sdk=""Microsoft.NET.Sdk"">
+</Project>
+";
+            string originalAssemblyInfo =
+$@"using System.Reflection;
+using System.Resources;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+
+[assembly:ComVisible( {defaultComVisible} )]
+[assembly:CLSCompliant( {defaultCls} )]
+[assembly: Guid(""{defaultGuid}"")]
+";
+
+            string expectedCsProj =
+$@"<Project Sdk=""Microsoft.NET.Sdk"">
+  <ItemGroup>
+    <AssemblyAttribute Include=""System.Runtime.InteropServices.ComVisibleAttribute"">
+        <_Parameter1>{defaultComVisible}</_Parameter1>
+    </AssemblyAttribute>
+    <AssemblyAttribute Include=""System.CLSCompliantAttribute"">
+        <_Parameter1>{defaultCls}</_Parameter1>
+    </AssemblyAttribute>
+    <AssemblyAttribute Include=""System.Runtime.InteropServices.GuidAttribute"">
+        <_Parameter1>{defaultGuid}</_Parameter1>
+    </AssemblyAttribute>
+  </ItemGroup>
+</Project>";
+
+            // Setup
+            var config = new Ai2CsprojConfig
+            {
+                // Default should be to migrate all.
+                DeleteOldAssemblyInfo = true
+            };
+
+            // Act / Check
+            DoMigrationTest(
+                config,
+                originalCsProj,
+                originalAssemblyInfo,
+                expectedCsProj,
+                ""
+            );
+        }
+
+        [TestMethod]
+        public void MigrateItemGroupAndRemoveGenerateAssemblyInfoTest()
+        {
+            const string originalCsProj = 
+@"<Project Sdk=""Microsoft.NET.Sdk"">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+  </PropertyGroup>
+</Project>
+";
+            string originalAssemblyInfo =
+$@"using System.Reflection;
+using System.Resources;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+
+[assembly:ComVisible( {defaultComVisible} )]
+[assembly:CLSCompliant( {defaultCls} )]
+[assembly: Guid(""{defaultGuid}"")]
+";
+
+            string expectedCsProj =
+$@"<Project Sdk=""Microsoft.NET.Sdk"">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+  <ItemGroup>
+    <AssemblyAttribute Include=""System.Runtime.InteropServices.ComVisibleAttribute"">
+        <_Parameter1>{defaultComVisible}</_Parameter1>
+    </AssemblyAttribute>
+    <AssemblyAttribute Include=""System.CLSCompliantAttribute"">
+        <_Parameter1>{defaultCls}</_Parameter1>
+    </AssemblyAttribute>
+    <AssemblyAttribute Include=""System.Runtime.InteropServices.GuidAttribute"">
+        <_Parameter1>{defaultGuid}</_Parameter1>
+    </AssemblyAttribute>
+  </ItemGroup>
+</Project>";
+
+            // Setup
+            var config = new Ai2CsprojConfig
+            {
+                // Default should be to migrate all.
+                DeleteOldAssemblyInfo = true
+            };
+
+            // Act / Check
+            DoMigrationTest(
+                config,
+                originalCsProj,
+                originalAssemblyInfo,
+                expectedCsProj,
+                ""
+            );
+        }
+
+        [TestMethod]
+        public void MigrateItemGroupAndRemovePropertyGroupWithJustGenerateAssemblyInfoTest()
+        {
+            const string originalCsProj = 
+@"<Project Sdk=""Microsoft.NET.Sdk"">
+  <PropertyGroup>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+  </PropertyGroup>
 </Project>
 ";
             string originalAssemblyInfo =

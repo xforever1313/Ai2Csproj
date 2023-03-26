@@ -31,6 +31,8 @@ namespace Ai2Csproj
 
         private static readonly IReadOnlyDictionary<Type, string> attributeToXmlMapping;
 
+        private static readonly IReadOnlyDictionary<Type, string> attributeToDisableGenerationMapping;
+
         private static readonly IReadOnlyDictionary<SupportedAssemblyAttributes, Type> supportedAssembliesMapping;
 
         private static readonly IReadOnlyDictionary<VersionSource, Type> versionSourceMapping;
@@ -57,6 +59,26 @@ namespace Ai2Csproj
                 };
 
                 attributeToXmlMapping = new ReadOnlyDictionary<Type, string>( dict );
+            }
+
+            {
+                var dict = new Dictionary<Type, string>
+                {
+                    // Taken from here:
+                    // https://learn.microsoft.com/en-us/dotnet/core/project-sdk/msbuild-props#assembly-attribute-properties
+                    [typeof( AssemblyCompanyAttribute )] = "GenerateAssemblyCompanyAttribute",
+                    [typeof( AssemblyConfigurationAttribute )] = "GenerateAssemblyConfigurationAttribute",
+                    [typeof( AssemblyCopyrightAttribute )] = "GenerateAssemblyCopyrightAttribute",
+                    [typeof( AssemblyDescriptionAttribute )] = "GenerateAssemblyDescriptionAttribute",
+                    [typeof( AssemblyFileVersionAttribute )] = "GenerateAssemblyFileVersionAttribute",
+                    [typeof( AssemblyInformationalVersionAttribute )] = "GenerateAssemblyInformationalVersionAttribute",
+                    [typeof( AssemblyProductAttribute )] = "GenerateAssemblyProductAttribute",
+                    [typeof( AssemblyTitleAttribute )] = "GenerateAssemblyTitleAttribute",
+                    [typeof( AssemblyVersionAttribute )] = "GenerateAssemblyVersionAttribute",
+                    [typeof( NeutralResourcesLanguageAttribute )] = "GenerateNeutralResourcesLanguageAttribute"
+                };
+
+                attributeToDisableGenerationMapping = new ReadOnlyDictionary<Type, string>( dict );
             }
 
             {
@@ -113,6 +135,25 @@ namespace Ai2Csproj
             if( attributeToXmlMapping.ContainsKey( type ) )
             {
                 return attributeToXmlMapping[type];
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Tries to get the XML element name of the given
+        /// attribute that disables automatic generation,
+        /// if one exists.
+        /// If this returns not-null,
+        /// then the type has a PropertyGroup element
+        /// that can be used to disable automatic generation.
+        /// Otherwise, there is no option, and returns null.
+        /// </summary>
+        public static string? TryGetDisableGenerationXmlName( Type type )
+        {
+            if( attributeToDisableGenerationMapping.ContainsKey( type ) )
+            { 
+                return attributeToDisableGenerationMapping[type];
             }
 
             return null;

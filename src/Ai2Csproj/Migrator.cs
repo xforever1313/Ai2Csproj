@@ -205,6 +205,9 @@ namespace Ai2Csproj
             {
                 throw new InvalidOperationException( "Somehow, the csproj root node is null" );
             }
+
+            ResolveGenerateAssemblyInfo( root );
+
             if( root.HasElements == false )
             {
                 if( propertyGroup is not null )
@@ -263,6 +266,39 @@ namespace Ai2Csproj
             }
 
             return csproj.ToString( SaveOptions.None );
+        }
+
+        private void ResolveGenerateAssemblyInfo( XElement root )
+        {
+            var elementsToRemove = new List<XElement>();
+            foreach( XElement element in root.Elements() )
+            {
+                if( "PropertyGroup".Equals( element.Name.LocalName ) )
+                {
+                    var propertiesToRemove = new List<XElement>();
+                    foreach( XElement propertyGroupElement in element.Elements() )
+                    {
+                        if( "GenerateAssemblyInfo".Equals( propertyGroupElement.Name.LocalName ) )
+                        {
+                            propertiesToRemove.Add( propertyGroupElement );
+                        }
+                    }
+                    foreach( XElement toRemove in propertiesToRemove )
+                    {
+                        toRemove.Remove();
+                    }
+
+                    if( element.HasElements == false )
+                    {
+                        elementsToRemove.Add( element );
+                    }
+                }
+            }
+
+            foreach( XElement toRemove in elementsToRemove )
+            {
+                toRemove.Remove();
+            }
         }
 
         private void BackupFile( FileInfo fileInfo )
