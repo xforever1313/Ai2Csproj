@@ -209,81 +209,61 @@ namespace Ai2Csproj
 
             ResolveGenerateAssemblyInfo( root );
 
-            if( root.HasElements == false )
+            if( ( propertyGroup is not null ) || ( generatePropertyGroup is not null ) )
             {
-                if( propertyGroup is not null )
+                XElement? lastPropertyGroup = null;
+                foreach( XElement element in root.Elements() )
                 {
-                    root.Add( propertyGroup );
+                    if( "PropertyGroup".Equals( element.Name.LocalName ) )
+                    {
+                        lastPropertyGroup = element;
+                    }
                 }
 
-                if( generatePropertyGroup is not null )
+                if( lastPropertyGroup is null )
                 {
-                    root.Add( generatePropertyGroup );
+                    if( generatePropertyGroup is not null )
+                    {
+                        root.AddFirst( generatePropertyGroup );
+                    }
+
+                    if( propertyGroup is not null )
+                    {
+                        root.AddFirst( propertyGroup );
+                    }
+                }
+                else
+                {
+                    if( generatePropertyGroup is not null )
+                    {
+                        lastPropertyGroup.AddAfterSelf( generatePropertyGroup );
+                    }
+
+                    if( propertyGroup is not null )
+                    {
+                        lastPropertyGroup.AddAfterSelf( propertyGroup );
+                    }
+                }
+            }
+
+            if( itemGroup is not null )
+            {
+                XElement? lastItemGroup = null;
+                foreach( XElement element in root.Elements() )
+                {
+                    if( "ItemGroup".Equals( element.Name.LocalName ) )
+                    {
+                        lastItemGroup = element;
+                    }
                 }
 
-                if( itemGroup is not null )
+                if( lastItemGroup is null )
                 {
                     root.Add( itemGroup );
                 }
-            }
-            else
-            {
-                if( ( propertyGroup is not null ) || ( generatePropertyGroup is not null ) )
+                else
                 {
-                    XElement? lastPropertyGroup = null;
-                    foreach( XElement element in root.Elements() )
-                    {
-                        if( "PropertyGroup".Equals( element.Name.LocalName ) )
-                        {
-                            lastPropertyGroup = element;
-                        }
-                    }
-
-                    if( lastPropertyGroup is null )
-                    {
-                        if( generatePropertyGroup is not null )
-                        {
-                            root.AddFirst( generatePropertyGroup );
-                        }
-
-                        if( propertyGroup is not null )
-                        {
-                            root.AddFirst( propertyGroup );
-                        }
-                    }
-                    else
-                    {
-                        if( generatePropertyGroup is not null )
-                        {
-                            lastPropertyGroup.AddAfterSelf( generatePropertyGroup );
-                        }
-
-                        if( propertyGroup is not null )
-                        {
-                            lastPropertyGroup.AddAfterSelf( propertyGroup );
-                        }
-                    }
-                }
-
-                if( itemGroup is not null )
-                {
-                    XElement? lastItemGroup = null;
-                    foreach( XElement element in root.Elements() )
-                    {
-                        if( "ItemGroup".Equals( element.Name.LocalName ) )
-                        {
-                            lastItemGroup = element;
-                        }
-                    }
-
-                    if( lastItemGroup is null )
-                    {
-                        root.Add( itemGroup );
-                    }
-                    else
-                    {
-                        lastItemGroup.AddAfterSelf( itemGroup );
-                    }
+                    lastItemGroup.AddAfterSelf( itemGroup );
                 }
             }
 
