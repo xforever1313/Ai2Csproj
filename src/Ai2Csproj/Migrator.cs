@@ -13,6 +13,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+using System.Reflection;
 using System.Xml.Linq;
 using Ai2Csproj.Shared;
 using Microsoft.CodeAnalysis;
@@ -76,17 +77,27 @@ namespace Ai2Csproj
                     {
                         foreach( AttributeArgumentSyntax argumentSyntax in attributeArgSyntax.Arguments )
                         {
-                            string text;
+                            string? text = null;
                             ExpressionSyntax expression = argumentSyntax.Expression;
                             if( expression is InterpolatedStringExpressionSyntax interString )
                             {
-                                text = expression.ToString();
+                                text = interString.Contents.ToString();
+                            }
+                            else if( expression is LiteralExpressionSyntax litExpression )
+                            {
+                                if( litExpression.Kind() == SyntaxKind.StringLiteralExpression )
+                                {
+                                    text = litExpression.Token.ValueText;
+                                }
                             }
                             else
                             {
-                                text = expression.ToString().Trim( '"' );
+                                text = expression.ToString();
                             }
-                            attributeParameters.Add( text );
+                            if( text is not null )
+                            {
+                                attributeParameters.Add( text );
+                            }
                         }
                     }
 

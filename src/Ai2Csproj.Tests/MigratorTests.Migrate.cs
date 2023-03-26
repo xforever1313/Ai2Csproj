@@ -83,9 +83,9 @@ $@"<Project Sdk=""Microsoft.NET.Sdk"">
        [TestMethod]
         public void MigrateAllAttributesTest()
         {
+            // Setup
             string expectedCsProj = everythingMigratedCsProj;
 
-            // Setup
             var config = new Ai2CsprojConfig
             {
                 // Default should be to migrate all.
@@ -105,9 +105,9 @@ $@"<Project Sdk=""Microsoft.NET.Sdk"">
         [TestMethod]
         public void MigrateAllWithNoNamespaceWithSuffixInAssemlbyInfoTest()
         {
+            // Setup
             string expectedCsProj = everythingMigratedCsProj;
 
-            // Setup
             var config = new Ai2CsprojConfig
             {
                 // Default should be to migrate all.
@@ -127,9 +127,9 @@ $@"<Project Sdk=""Microsoft.NET.Sdk"">
         [TestMethod]
         public void MigrateAllWithNamespaceWithSuffixInAssemlbyInfoTest()
         {
+            // Setup
             string expectedCsProj = everythingMigratedCsProj;
 
-            // Setup
             var config = new Ai2CsprojConfig
             {
                 // Default should be to migrate all.
@@ -149,9 +149,9 @@ $@"<Project Sdk=""Microsoft.NET.Sdk"">
         [TestMethod]
         public void MigrateAllWithNamespaceWithNoSuffixInAssemlbyInfoTest()
         {
+            // Setup
             string expectedCsProj = everythingMigratedCsProj;
 
-            // Setup
             var config = new Ai2CsprojConfig
             {
                 // Default should be to migrate all.
@@ -171,6 +171,7 @@ $@"<Project Sdk=""Microsoft.NET.Sdk"">
         [TestMethod]
         public void MigratePropertyGroupToEmptyCsProjTest()
         {
+            // Setup
             const string originalCsProj = 
 @"<Project Sdk=""Microsoft.NET.Sdk"">
 </Project>
@@ -195,7 +196,52 @@ $@"<Project Sdk=""Microsoft.NET.Sdk"">
   </PropertyGroup>
 </Project>";
 
+            var config = new Ai2CsprojConfig
+            {
+                // Default should be to migrate all.
+                DeleteOldAssemblyInfo = true
+            };
+
+            // Act / Check
+            DoMigrationTest(
+                config,
+                originalCsProj,
+                originalAssemblyInfo,
+                expectedCsProj,
+                ""
+            );
+        }
+
+        [TestMethod]
+        public void MigrateWithSpecialStringTypesInAssemblyInfoTest()
+        {
             // Setup
+            const string originalCsProj =
+@"<Project Sdk=""Microsoft.NET.Sdk"">
+</Project>
+";
+            const string originalAssemblyInfo =
+$@"using System.Reflection;
+using System.Resources;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+
+[assembly: AssemblyCompany( @""{defaultCompany}"" )]
+[assembly: AssemblyConfiguration( $""{defaultConfiguration}"" )]
+[assembly: AssemblyCopyright( $@""{defaultCopyRight}"" )]
+[assembly: AssemblyTitle( @$""{defaultTitle}"" )]
+";
+
+            const string expectedCsProj =
+$@"<Project Sdk=""Microsoft.NET.Sdk"">
+  <PropertyGroup>
+    <Company>{defaultCompany}</Company>
+    <Configuration>{defaultConfiguration}</Configuration>
+    <Copyright>{defaultCopyRight}</Copyright>
+    <AssemblyTitle>{defaultTitle}</AssemblyTitle>
+  </PropertyGroup>
+</Project>";
+
             var config = new Ai2CsprojConfig
             {
                 // Default should be to migrate all.
@@ -215,6 +261,7 @@ $@"<Project Sdk=""Microsoft.NET.Sdk"">
         [TestMethod]
         public void MigratePropertyGroupAndRemoveGenerateAssemblyInfoTest()
         {
+            // Setup
             const string originalCsProj = 
 @"<Project Sdk=""Microsoft.NET.Sdk"">
   <PropertyGroup>
@@ -252,7 +299,6 @@ $@"<Project Sdk=""Microsoft.NET.Sdk"">
   </PropertyGroup>
 </Project>";
 
-            // Setup
             var config = new Ai2CsprojConfig
             {
                 // Default should be to migrate all.
@@ -272,6 +318,7 @@ $@"<Project Sdk=""Microsoft.NET.Sdk"">
         [TestMethod]
         public void MigratePropertyGroupAndRemovePropertyGroupWithJustGenerateAssemblyInfoTest()
         {
+            // Setup
             const string originalCsProj = 
 @"<Project Sdk=""Microsoft.NET.Sdk"">
   <PropertyGroup>
@@ -299,7 +346,6 @@ $@"<Project Sdk=""Microsoft.NET.Sdk"">
   </PropertyGroup>
 </Project>";
 
-            // Setup
             var config = new Ai2CsprojConfig
             {
                 // Default should be to migrate all.
@@ -319,6 +365,7 @@ $@"<Project Sdk=""Microsoft.NET.Sdk"">
         [TestMethod]
         public void MigrateItemGroupToEmptyCsProjTest()
         {
+            // Setup
             const string originalCsProj = 
 @"<Project Sdk=""Microsoft.NET.Sdk"">
 </Project>
@@ -349,7 +396,6 @@ $@"<Project Sdk=""Microsoft.NET.Sdk"">
   </ItemGroup>
 </Project>";
 
-            // Setup
             var config = new Ai2CsprojConfig
             {
                 // Default should be to migrate all.
@@ -369,6 +415,7 @@ $@"<Project Sdk=""Microsoft.NET.Sdk"">
         [TestMethod]
         public void MigrateItemGroupAndRemoveGenerateAssemblyInfoTest()
         {
+            // Setup
             const string originalCsProj = 
 @"<Project Sdk=""Microsoft.NET.Sdk"">
   <PropertyGroup>
@@ -412,7 +459,6 @@ $@"<Project Sdk=""Microsoft.NET.Sdk"">
   </ItemGroup>
 </Project>";
 
-            // Setup
             var config = new Ai2CsprojConfig
             {
                 // Default should be to migrate all.
@@ -432,6 +478,7 @@ $@"<Project Sdk=""Microsoft.NET.Sdk"">
         [TestMethod]
         public void MigrateItemGroupAndRemovePropertyGroupWithJustGenerateAssemblyInfoTest()
         {
+            // Setup
             const string originalCsProj = 
 @"<Project Sdk=""Microsoft.NET.Sdk"">
   <PropertyGroup>
@@ -465,7 +512,6 @@ $@"<Project Sdk=""Microsoft.NET.Sdk"">
   </ItemGroup>
 </Project>";
 
-            // Setup
             var config = new Ai2CsprojConfig
             {
                 // Default should be to migrate all.
