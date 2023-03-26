@@ -412,6 +412,109 @@ $@"<Project Sdk=""Microsoft.NET.Sdk"">
             RunTest( testConfig );
         }
 
+        [TestMethod]
+        public void TestWithPreprocessorDefined()
+        {
+            const string originalAssemblyInfo =
+$@"using System.Reflection;
+using System.Resources;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+
+#if DEBUG
+[assembly: AssemblyCopyright( ""{defaultCopyRight}"" )]
+#else
+[assembly: AssemblyCopyright( ""WRONG COPYRIGHT"" )]
+#endif
+
+#if NET5_0
+[assembly: AssemblyVersion( ""WRONG VERSION"" )]
+#elseif NET6_0_OR_GREATER
+[assembly: AssemblyVersion( ""{defaultAssemblyVersion}"" )]
+#else
+[assembly: AssemblyVersion( ""STILL WRONG"" )]
+#endif
+
+#if NOT_DEFINED
+[assembly: AssemblyTrademark( ""WRONG TRADEMARK"" )]
+#else
+[assembly: AssemblyTrademark( ""{defaultTrademark}"" )]
+#endif
+";
+
+            const string expectedCsProj =
+$@" <Project Sdk=""Microsoft.NET.Sdk"">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <Copyright>{defaultCopyRight}</Copyright>
+    <AssemblyVersion>{defaultAssemblyVersion}</AssemblyVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <AssemblyAttribute Include=""System.Reflection.AssemblyTrademarkAttribute"">
+        <_Parameter1>{defaultTrademark}</_Parameter1>
+    </AssemblyAttribute>
+  </ItemGroup>
+</Project>
+";
+
+            string? expectedAssemblyInfo =
+$@"using System.Reflection;
+using System.Resources;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+
+#if DEBUG
+#else
+[assembly: AssemblyCopyright( ""WRONG COPYRIGHT"" )]
+#endif
+
+#if NET5_0
+[assembly: AssemblyVersion( ""WRONG VERSION"" )]
+#elseif NET6_0_OR_GREATER
+#else
+[assembly: AssemblyVersion( ""STILL WRONG"" )]
+#endif
+
+#if NOT_DEFINED
+[assembly: AssemblyTrademark( ""WRONG TRADEMARK"" )]
+#else
+#endif
+";
+            // ^That is what we would expect in the ideal situation,
+            // but the parser currently isn't smart enough
+            // to handle that due to preprocessor stuff.
+            // The end result is the assembly info being deleted completely.
+            // Just something to mark in the limitation section.
+            // Even something better we can do is add preprocessor stuff
+            // to the csproj... somehow...
+            expectedAssemblyInfo = null;
+            var testConfig = new TestConfig( nameof( TestWithPreprocessorDefined ) )
+            {
+                Arguments = new string[]
+                {
+                    "--delete_old_assembly_info",
+                    "--define=NET6_0_OR_GREATER",
+                    "--define=DEBUG"
+                },
+                ExpectBackups = true,
+                OriginalCsProj = defaultOriginalCsProj,
+                OriginalAssemblyInfo = defaultOriginalAssemblyInfo,
+                ExpectedCsProj = expectedCsProj,
+                ExpectedAssemblyInfo = expectedAssemblyInfo,
+                ExpectedExitCode = 0
+            };
+
+            RunTest( testConfig );
+        }
+
         /// <summary>
         /// Settings include:
         /// - Dry run is enabled.

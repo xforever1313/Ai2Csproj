@@ -13,6 +13,8 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+using System.Collections.Immutable;
+
 namespace Ai2Csproj.Tests
 {
     [TestClass]
@@ -183,6 +185,50 @@ namespace Ai2Csproj.Tests
             var expectedConfig = new Ai2CsprojConfig
             {
                 DeleteBackup = true
+            };
+
+            DoArgumentParsingToConfigTest( args, expectedConfig );
+        }
+
+        [TestMethod]
+        public void DefineTest()
+        {
+            string[] args = new string[]
+            {
+                "--define=NET6_0_OR_GREATER"
+            };
+
+            ImmutableArray<string> expectedDefines = new string[]
+            {
+                "NET6_0_OR_GREATER"
+            }.ToImmutableArray();
+
+            var expectedConfig = new Ai2CsprojConfig
+            {
+                PreprocessorDefines = new PreprocessorDefinesCollection( expectedDefines )
+            };
+
+            DoArgumentParsingToConfigTest( args, expectedConfig );
+        }
+
+        [TestMethod]
+        public void MultipleDefineTest()
+        {
+            string[] args = new string[]
+            {
+                "--define=NET6_0_OR_GREATER",
+                "--define=DEBUG",
+            };
+
+            ImmutableArray<string> expectedDefines = new string[]
+            {
+                "NET6_0_OR_GREATER",
+                "DEBUG"
+            }.ToImmutableArray();
+
+            var expectedConfig = new Ai2CsprojConfig
+            {
+                PreprocessorDefines = new PreprocessorDefinesCollection( expectedDefines )
             };
 
             DoArgumentParsingToConfigTest( args, expectedConfig );

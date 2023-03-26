@@ -20,8 +20,6 @@ namespace Ai2Csproj
 {
     internal record class Ai2CsprojConfig
     {
-        // ---------------- Fields ----------------
-
         // ---------------- Properties ----------------
 
         public bool DryRun { get; init; } = false;
@@ -48,6 +46,8 @@ namespace Ai2Csproj
         public SupportedAssemblyAttributes TypesToMigrate { get; init; }
 
         public SupportedAssemblyAttributes TypesToLeave { get; init; }
+
+        public PreprocessorDefinesCollection PreprocessorDefines { get; init; }
 
         // ---------------- Functions ----------------
 

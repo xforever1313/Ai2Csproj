@@ -58,7 +58,11 @@ namespace Ai2Csproj
         {
             var model = new AssemblyInfoModel( this.config );
 
-            SyntaxTree syntaxTree = CSharpSyntaxTree.ParseText( assemblyInfoContents );
+            var parseOptions = new CSharpParseOptions(
+                preprocessorSymbols: this.config.PreprocessorDefines.Defines
+            );
+
+            SyntaxTree syntaxTree = CSharpSyntaxTree.ParseText( assemblyInfoContents, parseOptions );
             CompilationUnitSyntax root = syntaxTree.GetCompilationUnitRoot();
 
             var attributeListsToKeep = new SyntaxList<AttributeListSyntax>();

@@ -114,6 +114,11 @@ namespace Ai2Csproj
 
                         this.Config = this.Config with { VersionSourceStrategy = versionSource };
                     }
+                },
+                {
+                    "define=",
+                    "Add a preprocessor define/symbol when parsing the AssemblyInfo file.  Multiple defines can be added.",
+                    v => this.Config = this.Config with { PreprocessorDefines = this.Config.PreprocessorDefines.Add( v ) }
                 }
             };
             
