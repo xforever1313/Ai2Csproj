@@ -191,10 +191,11 @@ namespace Ai2Csproj
 
         private string BuildCsProj( string originalCsProjContents, AssemblyInfoModel model )
         {
-            XElement? propertyGroup = model.GetPropertyGroupXml();
+            XElement? propertyGroup = model.GetAssemblyAttributesPropertyGroupXml();
+            XElement? generatePropertyGroup = model.GetGeneratePropertyGroupXml();
             XElement? itemGroup = model.GetItemGroupXml();
 
-            if( ( propertyGroup is null ) && ( itemGroup is null ) )
+            if( ( propertyGroup is null ) && ( generatePropertyGroup is null ) && ( itemGroup is null ) )
             {
                 return originalCsProjContents;
             }
@@ -215,6 +216,11 @@ namespace Ai2Csproj
                     root.Add( propertyGroup );
                 }
 
+                if( generatePropertyGroup is not null )
+                {
+                    root.Add( generatePropertyGroup );
+                }
+
                 if( itemGroup is not null )
                 {
                     root.Add( itemGroup );
@@ -222,7 +228,7 @@ namespace Ai2Csproj
             }
             else
             {
-                if( propertyGroup is not null )
+                if( ( propertyGroup is not null ) || ( generatePropertyGroup is not null ) )
                 {
                     XElement? lastPropertyGroup = null;
                     foreach( XElement element in root.Elements() )
@@ -235,11 +241,27 @@ namespace Ai2Csproj
 
                     if( lastPropertyGroup is null )
                     {
-                        root.AddFirst( propertyGroup );
+                        if( generatePropertyGroup is not null )
+                        {
+                            root.AddFirst( generatePropertyGroup );
+                        }
+
+                        if( propertyGroup is not null )
+                        {
+                            root.AddFirst( propertyGroup );
+                        }
                     }
                     else
                     {
-                        lastPropertyGroup.AddAfterSelf( propertyGroup );
+                        if( generatePropertyGroup is not null )
+                        {
+                            lastPropertyGroup.AddAfterSelf( generatePropertyGroup );
+                        }
+
+                        if( propertyGroup is not null )
+                        {
+                            lastPropertyGroup.AddAfterSelf( propertyGroup );
+                        }
                     }
                 }
 

@@ -109,7 +109,7 @@ namespace Ai2Csproj
             }
         }
 
-        public XElement? GetPropertyGroupXml()
+        public XElement? GetAssemblyAttributesPropertyGroupXml()
         {
             var element = new XElement( "PropertyGroup" );
 
@@ -134,6 +134,35 @@ namespace Ai2Csproj
             {
                 element.Add(
                     new XElement( "Version", this.versionString )
+                );
+            }
+
+            if( element.HasElements == false )
+            {
+                return null;
+            }
+
+            return element;
+        }
+
+        public XElement? GetGeneratePropertyGroupXml()
+        {
+            var element = new XElement( "PropertyGroup" );
+
+            foreach( var attribute in this.assemblyAttributes )
+            {
+                string? propertyGroupName = AssemblyAttributeMapping.TryGetDisableGenerationXmlName( attribute.Type );
+                if( propertyGroupName is null )
+                {
+                    continue;
+                }
+                else if( attribute.MigrationBehavior != MigrationBehavior.leave )
+                {
+                    continue;
+                }
+
+                element.Add(
+                    new XElement( propertyGroupName, "false" )
                 );
             }
 
