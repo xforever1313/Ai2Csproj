@@ -40,6 +40,7 @@ Note that if a ```--version_source``` is specified, the attribute that it copied
 * ```--dry_run``` - Prints to the STDOUT what ai2csproj will do without actually doing it.  The final contents of the csproj and AssemblyInfo file will be printed to STDOUT as well.
 * ```--no_backup``` - By default, backups are made of the csproj and AssemblyInfo.cs file by copying them into the same directory they are in and appending ".old" to the end of the file name.
 * ```--delete_old_assembly_info``` - Attempts to delete the old AssemblyInfo file.  The file will only be delete if the only thing left in the file are non-global namespaces or comments.  If the AssemblyInfo file contains anything else, it will be left alone.
+* ```--define``` - Add a preprocessor define.  Useful if you have attributes set to different values with a #if statement, and want to specify which one to migrate over.  Note, any attributes that are excluded from the preprocessor definitions are **deleted** (see limitations section).
 
 ## Limitations
 
@@ -48,3 +49,4 @@ Note that if a ```--version_source``` is specified, the attribute that it copied
 * Comments within the AssemblyInfo are not migrated to the .csproj.
 * If your AssemblyInfo.cs file has a syntax error, ai2csproj probably won't work.  Make sure your project compiles before running ai2csproj.
 * When using a version source that copies from AssemblyVersion or FileVersion, the attribute's values are copied _exactly_, even if the value is invalid for the ```<Version>``` property.
+* This tool doesn't work great with preprocessor defines.  Whatever attribute is excluded from the preprocessor will be removed completely when the tool is run.  Someday, it may be nice to somehow reconstruct the preprocessor logic in the .csproj, but that's not supported right now.
