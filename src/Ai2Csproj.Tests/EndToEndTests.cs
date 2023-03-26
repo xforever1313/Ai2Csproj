@@ -788,7 +788,7 @@ using System.Runtime.InteropServices;
         {
             var args = new string[]
             {
-                "--print_credits"
+                "--show_credits"
             };
 
             DoArgumentsDoNotChangeStateTest( args, nameof( TestWithPrintCreditsArgument ) );
@@ -799,10 +799,32 @@ using System.Runtime.InteropServices;
         {
             var args = new string[]
             {
-                "--print_license"
+                "--show_license"
             };
 
             DoArgumentsDoNotChangeStateTest( args, nameof( TestWithPrintLicenseArgument ) );
+        }
+
+        [TestMethod]
+        public void TestWithPrintReadmeArgument()
+        {
+            var args = new string[]
+            {
+                "--show_readme"
+            };
+
+            DoArgumentsDoNotChangeStateTest( args, nameof( TestWithPrintReadmeArgument ) );
+        }
+
+        [TestMethod]
+        public void TestWithPrintSourceArgument()
+        {
+            var args = new string[]
+            {
+                "--show_source"
+            };
+
+            DoArgumentsDoNotChangeStateTest( args, nameof( TestWithPrintSourceArgument ) );
         }
 
         [TestMethod]
@@ -810,7 +832,7 @@ using System.Runtime.InteropServices;
         {
             var args = new string[]
             {
-                "--list_supported_types"
+                "--show_supported_types"
             };
 
             DoArgumentsDoNotChangeStateTest( args, nameof( TestWithListSupportedTypesArgument ) );

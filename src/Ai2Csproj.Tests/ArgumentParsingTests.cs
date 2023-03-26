@@ -34,9 +34,31 @@ namespace Ai2Csproj.Tests
 
             // Check
             Assert.IsTrue( uut.ShowHelp );
+            Assert.IsFalse( uut.ShowReadme );
             Assert.IsFalse( uut.ShowVersion );
             Assert.IsFalse( uut.ShowCredits );
             Assert.IsFalse( uut.ShowLicense );
+            Assert.IsFalse( uut.ShowSource );
+            Assert.IsFalse( uut.ShowSupportedTypes );
+        }
+
+        [TestMethod]
+        public void ShowReadmeTest()
+        {
+            // Setup
+            string[] args = new string[] { "--show_readme" };
+            var uut = new ArgumentParser();
+
+            // Act
+            uut.Parse( args );
+
+            // Check
+            Assert.IsFalse( uut.ShowHelp );
+            Assert.IsTrue( uut.ShowReadme );
+            Assert.IsFalse( uut.ShowVersion );
+            Assert.IsFalse( uut.ShowCredits );
+            Assert.IsFalse( uut.ShowLicense );
+            Assert.IsFalse( uut.ShowSource );
             Assert.IsFalse( uut.ShowSupportedTypes );
         }
 
@@ -52,9 +74,11 @@ namespace Ai2Csproj.Tests
 
             // Check
             Assert.IsFalse( uut.ShowHelp );
+            Assert.IsFalse( uut.ShowReadme );
             Assert.IsTrue( uut.ShowVersion );
             Assert.IsFalse( uut.ShowCredits );
             Assert.IsFalse( uut.ShowLicense );
+            Assert.IsFalse( uut.ShowSource );
             Assert.IsFalse( uut.ShowSupportedTypes );
         }
 
@@ -62,7 +86,7 @@ namespace Ai2Csproj.Tests
         public void ShowCreditsTest()
         {
             // Setup
-            string[] args = new string[] { "--print_credits" };
+            string[] args = new string[] { "--show_credits" };
             var uut = new ArgumentParser();
 
             // Act
@@ -70,9 +94,11 @@ namespace Ai2Csproj.Tests
 
             // Check
             Assert.IsFalse( uut.ShowHelp );
+            Assert.IsFalse( uut.ShowReadme );
             Assert.IsFalse( uut.ShowVersion );
             Assert.IsTrue( uut.ShowCredits );
             Assert.IsFalse( uut.ShowLicense );
+            Assert.IsFalse( uut.ShowSource );
             Assert.IsFalse( uut.ShowSupportedTypes );
         }
 
@@ -80,7 +106,7 @@ namespace Ai2Csproj.Tests
         public void ShowLicenseTest()
         {
             // Setup
-            string[] args = new string[] { "--print_license" };
+            string[] args = new string[] { "--show_license" };
             var uut = new ArgumentParser();
 
             // Act
@@ -88,9 +114,31 @@ namespace Ai2Csproj.Tests
 
             // Check
             Assert.IsFalse( uut.ShowHelp );
+            Assert.IsFalse( uut.ShowReadme );
             Assert.IsFalse( uut.ShowVersion );
             Assert.IsFalse( uut.ShowCredits );
             Assert.IsTrue( uut.ShowLicense );
+            Assert.IsFalse( uut.ShowSource );
+            Assert.IsFalse( uut.ShowSupportedTypes );
+        }
+
+        [TestMethod]
+        public void ShowSourceTest()
+        {
+            // Setup
+            string[] args = new string[] { "--show_source" };
+            var uut = new ArgumentParser();
+
+            // Act
+            uut.Parse( args );
+
+            // Check
+            Assert.IsFalse( uut.ShowHelp );
+            Assert.IsFalse( uut.ShowReadme );
+            Assert.IsFalse( uut.ShowVersion );
+            Assert.IsFalse( uut.ShowCredits );
+            Assert.IsFalse( uut.ShowLicense );
+            Assert.IsTrue( uut.ShowSource );
             Assert.IsFalse( uut.ShowSupportedTypes );
         }
 
@@ -98,7 +146,7 @@ namespace Ai2Csproj.Tests
         public void ShowSupportedTypesTest()
         {
             // Setup
-            string[] args = new string[] { "--list_supported_types" };
+            string[] args = new string[] { "--show_supported_types" };
             var uut = new ArgumentParser();
 
             // Act
@@ -106,9 +154,11 @@ namespace Ai2Csproj.Tests
 
             // Check
             Assert.IsFalse( uut.ShowHelp );
+            Assert.IsFalse( uut.ShowReadme );
             Assert.IsFalse( uut.ShowVersion );
             Assert.IsFalse( uut.ShowCredits );
             Assert.IsFalse( uut.ShowLicense );
+            Assert.IsFalse( uut.ShowSource );
             Assert.IsTrue( uut.ShowSupportedTypes );
         }
 
@@ -250,8 +300,10 @@ namespace Ai2Csproj.Tests
 
             // Check
             Assert.IsFalse( uut.ShowHelp );
+            Assert.IsFalse( uut.ShowReadme );
             Assert.IsFalse( uut.ShowVersion );
             Assert.IsFalse( uut.ShowCredits );
+            Assert.IsFalse( uut.ShowSource );
             Assert.IsFalse( uut.ShowLicense );
             Assert.IsFalse( uut.ShowSupportedTypes );
             Assert.AreEqual( expectedConfig, uut.Config );

@@ -30,9 +30,11 @@ namespace Ai2Csproj
         public ArgumentParser()
         {
             this.ShowHelp = false;
+            this.ShowReadme = false;
             this.ShowVersion = false;
             this.ShowLicense = false;
             this.ShowCredits = false;
+            this.ShowSource = false;
             this.Config = new Ai2CsprojConfig();
 
             this.optionSet = new OptionSet
@@ -44,22 +46,33 @@ namespace Ai2Csproj
                 },
                 {
                     "version",
-                    "Shows the version and exits.",
+                    "Prints the version to STDOUT and exits.",
                     v => this.ShowVersion = ( v is not null )
                 },
                 {
-                    "print_license",
-                    "Prints the software license and exits.",
+                    "show_license",
+                    "Prints the software license to STDOUT and exits.",
                     v => this.ShowLicense = ( v is not null )
                 },
                 {
-                    "print_credits",
-                    "Prints the third-party notices and credits.",
+                    "show_credits",
+                    "Prints the third-party notices and credits to STDOUT and exits.",
                     v => this.ShowCredits = ( v is not null )
                 },
                 {
-                    "list_supported_types",
-                    "Prints a list of the supported AssemblyAttributes that can be migrated",
+                    "show_readme",
+                    "Prints the readme to STDOUT and exits.",
+                    v => this.ShowReadme = ( v is not null )
+                },
+
+                {
+                    "show_source",
+                    "Prints the link to the source code to STDOUT and exits.",
+                    v => this.ShowSource = ( v is not null )
+                },
+                {
+                    "show_supported_types",
+                    "Prints a list of the supported AssemblyAttributes that can be migrated to STDOUT and exits.",
                     v => this.ShowSupportedTypes = ( v is not null )
                 },
 
@@ -159,11 +172,15 @@ namespace Ai2Csproj
 
         public bool ShowHelp { get; private set; }
 
+        public bool ShowReadme { get; private set; }
+
         public bool ShowVersion { get; private set; }
 
         public bool ShowLicense { get; private set; }
 
         public bool ShowCredits { get; private set; }
+
+        public bool ShowSource { get; private set; }
 
         public bool ShowSupportedTypes { get; private set; }
 

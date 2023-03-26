@@ -43,6 +43,9 @@
     <EmbeddedResource Include="..\..\License.md" Link="License.md">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
+	<EmbeddedResource Include="..\..\Readme.md" Link="Readme.md">
+	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	</EmbeddedResource>
   </ItemGroup>
 
   <ItemGroup>

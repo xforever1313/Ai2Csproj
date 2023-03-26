@@ -48,14 +48,24 @@ internal class Program
                     argParser.WriteHelp( Console.Out );
                     return SuccessExitCode;
                 }
-                else if( argParser.ShowCredits )
+                else if( argParser.ShowReadme )
                 {
-                    PrintCredits();
+                    PrintReadme();
                     return SuccessExitCode;
                 }
                 else if( argParser.ShowLicense )
                 {
                     PrintLicense();
+                    return SuccessExitCode;
+                }
+                else if( argParser.ShowCredits )
+                {
+                    PrintCredits();
+                    return SuccessExitCode;
+                }
+                else if( argParser.ShowSource )
+                {
+                    PrintSourceLink();
                     return SuccessExitCode;
                 }
                 else if( argParser.ShowVersion )
@@ -144,5 +154,19 @@ internal class Program
         );
 
         Console.WriteLine( text );
+    }
+
+    private static void PrintReadme()
+    {
+        string text = AssemblyResourceReader.ReadStringResource(
+            typeof( Program ).Assembly, $"{nameof( Ai2Csproj )}.Readme.md"
+        );
+
+        Console.WriteLine( text );
+    }
+
+    private static void PrintSourceLink()
+    {
+        Console.WriteLine( "https://github.com/xforever1313/Ai2Csproj" );
     }
 }
