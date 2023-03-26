@@ -84,6 +84,24 @@ $@"<Project Sdk=""Microsoft.NET.Sdk"">
             );
         }
 
+        private static Ai2CsprojConfig GetConfigWithAllMigrated( SupportedAssemblyAttributes? excludedValues )
+        {
+            var config = new Ai2CsprojConfig();
+            foreach( SupportedAssemblyAttributes type in Enum.GetValues<SupportedAssemblyAttributes>() )
+            {
+                if( excludedValues is not null )
+                {
+                    if( ( excludedValues & type ) == excludedValues )
+                    {
+                        continue;
+                    }
+                }
+                config = config with { TypesToMigrate = config.TypesToMigrate | type };
+            }
+
+            return config;
+        }
+
         private static Ai2CsprojConfig GetConfigWithAllDeleted( SupportedAssemblyAttributes? excludedValues )
         {
             var config = new Ai2CsprojConfig();

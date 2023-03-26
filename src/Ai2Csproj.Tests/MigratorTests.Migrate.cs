@@ -110,9 +110,9 @@ $@"<Project Sdk=""Microsoft.NET.Sdk"">
             // Setup
             string expectedCsProj = everythingMigratedCsProj;
 
-            var config = new Ai2CsprojConfig
+            var config = GetConfigWithAllMigrated( null );
+            config = config with
             {
-                // Default should be to migrate all.
                 DeleteOldAssemblyInfo = true
             };
 
