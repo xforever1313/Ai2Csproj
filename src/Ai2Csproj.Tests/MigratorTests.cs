@@ -63,31 +63,8 @@ $@"<Project Sdk=""Microsoft.NET.Sdk"">
 </Project>
 ";
         private static readonly string defaultStartingAssemblyInfo =
-$@"using System.Reflection;
-using System.Resources;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
+            GetDefaultStartingAssemblyInfo( false, false );
 
-[assembly: AssemblyCompany( ""{defaultCompany}"" )]
-[assembly: AssemblyConfiguration( ""{defaultConfiguration}"" )]
-[assembly: AssemblyCopyright( ""{defaultCopyRight}"" )]
-[assembly: AssemblyDescription( ""{defaultDescription}"" )]
-[assembly: AssemblyFileVersion( ""{defaultFileVersion}"" )]
-[assembly: AssemblyInformationalVersion( ""{defaultInfoVersion}"" )]
-[assembly: AssemblyProduct( ""{defaultProduct}"" )]
-[assembly: AssemblyTitle( ""{defaultTitle}"" )]
-[assembly: AssemblyVersion( ""{defaultVersion}"" )]
-[assembly: NeutralResourcesLanguage( ""{defaultLanguage}"" )]
-
-[assembly: AssemblyTrademark( ""{defaultTrademark}"" )]
-[assembly: InternalsVisibleTo( ""{defaultInternals1}"" ),InternalsVisibleTo( ""{defaultInternals2}"" )]
-[assembly:ComVisible( {defaultComVisible} )]
-[assembly:CLSCompliant( {defaultCls} )]
-[assembly: Guid(""{defaultGuid}"")]
-[assembly: AssemblyKeyFile( ""{defaultKeyFile}"" )]
-[assembly: AssemblyKeyName( ""{defaultKeyName}"" )]
-[assembly: AssemblySignatureKey( ""{defaultPublicKey}"", ""{defaultCounterSignature}"" )]
-";
         // ---------------- Test Helpers ----------------
 
         private static void DoMigrationTest(
@@ -141,6 +118,47 @@ using System.Runtime.InteropServices;
             }
 
             return config;
+        }
+
+        private static string GetDefaultStartingAssemblyInfo(
+            bool includeSuffix,
+            bool includeNamespace
+        )
+        {
+            string suffixString = includeSuffix ? "Attribute" : "";
+
+            string systemNamespace = includeNamespace ? "System." : "";
+            string reflectionNamespace = includeNamespace ? "System.Reflection." : "";
+            string resourcesNameSpace = includeNamespace ? "System.Resources." : "";
+            string compilerServicesNameSpace = includeNamespace ? "System.Runtime.CompilerServices." : "";
+            string interopServicesNameSpace = includeNamespace ? "System.Runtime.InteropServices." : "";
+
+            return
+$@"using System.Reflection;
+using System.Resources;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+
+[assembly: {reflectionNamespace}AssemblyCompany{suffixString}( ""{defaultCompany}"" )]
+[assembly: {reflectionNamespace}AssemblyConfiguration{suffixString}( ""{defaultConfiguration}"" )]
+[assembly: {reflectionNamespace}AssemblyCopyright{suffixString}( ""{defaultCopyRight}"" )]
+[assembly: {reflectionNamespace}AssemblyDescription{suffixString}( ""{defaultDescription}"" )]
+[assembly: {reflectionNamespace}AssemblyFileVersion{suffixString}( ""{defaultFileVersion}"" )]
+[assembly: {reflectionNamespace}AssemblyInformationalVersion{suffixString}( ""{defaultInfoVersion}"" )]
+[assembly: {reflectionNamespace}AssemblyProduct{suffixString}( ""{defaultProduct}"" )]
+[assembly: {reflectionNamespace}AssemblyTitle{suffixString}( ""{defaultTitle}"" )]
+[assembly: {reflectionNamespace}AssemblyVersion{suffixString}( ""{defaultVersion}"" )]
+[assembly: {resourcesNameSpace}NeutralResourcesLanguage{suffixString}( ""{defaultLanguage}"" )]
+
+[assembly: {reflectionNamespace}AssemblyTrademark{suffixString}( ""{defaultTrademark}"" )]
+[assembly: {compilerServicesNameSpace}InternalsVisibleTo{suffixString}( ""{defaultInternals1}"" ),InternalsVisibleTo( ""{defaultInternals2}"" )]
+[assembly: {interopServicesNameSpace}ComVisible{suffixString}( {defaultComVisible} )]
+[assembly: {systemNamespace}CLSCompliant{suffixString}( {defaultCls} )]
+[assembly: {interopServicesNameSpace}Guid{suffixString}(""{defaultGuid}"")]
+[assembly: {reflectionNamespace}AssemblyKeyFile{suffixString}( ""{defaultKeyFile}"" )]
+[assembly: {reflectionNamespace}AssemblyKeyName{suffixString}( ""{defaultKeyName}"" )]
+[assembly: {reflectionNamespace}AssemblySignatureKey{suffixString}( ""{defaultPublicKey}"", ""{defaultCounterSignature}"" )]
+";
         }
     }
 }

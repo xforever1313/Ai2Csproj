@@ -17,10 +17,9 @@ namespace Ai2Csproj.Tests
 {
     public sealed partial class MigratorTests
     {
-       [TestMethod]
-        public void MigrateAllAttributesTest()
-        {
-            string expectedCsProj =
+        // ---------------- Fields ----------------
+
+        private static readonly string everythingMigratedCsProj =
 $@"<Project Sdk=""Microsoft.NET.Sdk"">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -79,6 +78,13 @@ $@"<Project Sdk=""Microsoft.NET.Sdk"">
   </ItemGroup>
 </Project>";
 
+        // ---------------- Tests  ----------------
+
+       [TestMethod]
+        public void MigrateAllAttributesTest()
+        {
+            string expectedCsProj = everythingMigratedCsProj;
+
             // Setup
             var config = new Ai2CsprojConfig
             {
@@ -96,6 +102,72 @@ $@"<Project Sdk=""Microsoft.NET.Sdk"">
             );
         }
     
+        [TestMethod]
+        public void MigrateAllWithNoNamespaceWithSuffixInAssemlbyInfoTest()
+        {
+            string expectedCsProj = everythingMigratedCsProj;
+
+            // Setup
+            var config = new Ai2CsprojConfig
+            {
+                // Default should be to migrate all.
+                DeleteOldAssemblyInfo = true
+            };
+
+            // Act / Check
+            DoMigrationTest(
+                config,
+                defaultStartingCsProj,
+                GetDefaultStartingAssemblyInfo( true, false ),
+                expectedCsProj,
+                ""
+            );
+        }
+
+        [TestMethod]
+        public void MigrateAllWithNamespaceWithSuffixInAssemlbyInfoTest()
+        {
+            string expectedCsProj = everythingMigratedCsProj;
+
+            // Setup
+            var config = new Ai2CsprojConfig
+            {
+                // Default should be to migrate all.
+                DeleteOldAssemblyInfo = true
+            };
+
+            // Act / Check
+            DoMigrationTest(
+                config,
+                defaultStartingCsProj,
+                GetDefaultStartingAssemblyInfo( true, true ),
+                expectedCsProj,
+                ""
+            );
+        }
+
+        [TestMethod]
+        public void MigrateAllWithNamespaceWithNoSuffixInAssemlbyInfoTest()
+        {
+            string expectedCsProj = everythingMigratedCsProj;
+
+            // Setup
+            var config = new Ai2CsprojConfig
+            {
+                // Default should be to migrate all.
+                DeleteOldAssemblyInfo = true
+            };
+
+            // Act / Check
+            DoMigrationTest(
+                config,
+                defaultStartingCsProj,
+                GetDefaultStartingAssemblyInfo( false, true ),
+                expectedCsProj,
+                ""
+            );
+        }
+
         [TestMethod]
         public void MigratePropertyGroupToEmptyCsProjTest()
         {
