@@ -70,5 +70,46 @@ namespace Ai2Csproj.Tests
                 defaultStartingAssemblyInfo
             );
         }
+
+        [TestMethod]
+        public void LeaveAllAttributesWithEmptyCsprojTest()
+        {
+            // Setup
+            const string originalCsProj =
+@"<Project Sdk=""Microsoft.NET.Sdk"">
+</Project>
+";
+
+            // If we want to leave all the attributes,
+            // and we remove the GenerateAssemblyInfo,
+            // we need to make sure we set all the generate methods
+            // to false.
+            const string expectedCsProj =
+@"<Project Sdk=""Microsoft.NET.Sdk"">
+  <PropertyGroup>
+    <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
+    <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
+    <GenerateAssemblyCopyrightAttribute>false</GenerateAssemblyCopyrightAttribute>
+    <GenerateAssemblyDescriptionAttribute>false</GenerateAssemblyDescriptionAttribute>
+    <GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
+    <GenerateAssemblyInformationalVersionAttribute>false</GenerateAssemblyInformationalVersionAttribute>
+    <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
+    <GenerateAssemblyTitleAttribute>false</GenerateAssemblyTitleAttribute>
+    <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
+    <GenerateNeutralResourcesLanguageAttribute>false</GenerateNeutralResourcesLanguageAttribute>
+  </PropertyGroup>
+</Project>
+";
+            var config = GetConfigWithAllLeave( null );
+
+            // Act / Check
+            DoMigrationTest(
+                config,
+                originalCsProj,
+                defaultStartingAssemblyInfo,
+                expectedCsProj,
+                defaultStartingAssemblyInfo
+            );
+        }
     }
 }
