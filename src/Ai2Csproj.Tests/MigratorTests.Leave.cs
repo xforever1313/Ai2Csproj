@@ -111,5 +111,67 @@ namespace Ai2Csproj.Tests
                 defaultStartingAssemblyInfo
             );
         }
+
+        [TestMethod]
+        public void LeaveOnlyCopyrightAttributesTest()
+        {
+            // Setup
+            const string originalCsProj =
+@"<Project Sdk=""Microsoft.NET.Sdk"">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+  </PropertyGroup>
+</Project>
+";
+
+            // If we want to leave all the attributes,
+            // and we remove the GenerateAssemblyInfo,
+            // we need to make sure we set all the generate methods
+            // to false.
+            const string expectedCsProj =
+$@"<Project Sdk=""Microsoft.NET.Sdk"">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+  <PropertyGroup>
+    <Copyright>{defaultCopyRight}</Copyright>
+  </PropertyGroup>
+  <PropertyGroup>
+    <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
+    <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
+    <GenerateAssemblyDescriptionAttribute>false</GenerateAssemblyDescriptionAttribute>
+    <GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
+    <GenerateAssemblyInformationalVersionAttribute>false</GenerateAssemblyInformationalVersionAttribute>
+    <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
+    <GenerateAssemblyTitleAttribute>false</GenerateAssemblyTitleAttribute>
+    <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
+    <GenerateNeutralResourcesLanguageAttribute>false</GenerateNeutralResourcesLanguageAttribute>
+  </PropertyGroup>
+</Project>
+";
+            string expectedAssemblyInfo = GetDefaultStartingAssemblyInfo( false, false );
+            expectedAssemblyInfo = expectedAssemblyInfo.Replace(
+                $@"[assembly: AssemblyCopyright( ""{defaultCopyRight}"" )]{Environment.NewLine}",
+                ""
+            );
+
+            var config = GetConfigWithAllLeave( SupportedAssemblyAttributes.assembly_copyright );
+
+            // Act / Check
+            DoMigrationTest(
+                config,
+                originalCsProj,
+                defaultStartingAssemblyInfo,
+                expectedCsProj,
+                expectedAssemblyInfo
+            );
+        }
     }
 }
