@@ -29,6 +29,7 @@ public class BuildContext : FrostingContext
         this.RepoRoot = context.Environment.WorkingDirectory;
         this.SrcDir = this.RepoRoot.Combine( "src" );
         this.Solution = this.SrcDir.CombineWithFilePath( "Ai2Csproj.sln" );
+        this.ProjectPath = this.SrcDir.CombineWithFilePath( "Ai2Csproj/Ai2Csproj.csproj" );
         this.DistFolder = this.RepoRoot.Combine( "dist" );
         this.TestResultsFolder = this.RepoRoot.Combine( "TestResults" );
         this.TestCsProj = this.SrcDir.CombineWithFilePath( "Ai2Csproj.Tests/Ai2Csproj.Tests.csproj" );
@@ -41,6 +42,8 @@ public class BuildContext : FrostingContext
     public DirectoryPath SrcDir { get; private set; }
 
     public FilePath Solution { get; private set; }
+
+    public FilePath ProjectPath { get; private set; }
 
     public DirectoryPath DistFolder { get; private set; }
 
