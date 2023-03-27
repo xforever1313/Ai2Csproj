@@ -102,7 +102,8 @@ namespace Ai2Csproj
                     [SupportedAssemblyAttributes.assembly_guid] = typeof( GuidAttribute ),
                     [SupportedAssemblyAttributes.assembly_key_file] = typeof( AssemblyKeyFileAttribute ),
                     [SupportedAssemblyAttributes.assembly_key_name] = typeof( AssemblyKeyNameAttribute ),
-                    [SupportedAssemblyAttributes.assembly_signature_key] = typeof( AssemblySignatureKeyAttribute )
+                    [SupportedAssemblyAttributes.assembly_signature_key] = typeof( AssemblySignatureKeyAttribute ),
+                    [SupportedAssemblyAttributes.assembly_culture] = typeof( AssemblyCultureAttribute )
                 };
 
                 supportedAssembliesMapping = new ReadOnlyDictionary<SupportedAssemblyAttributes, Type>( dict );
@@ -238,7 +239,7 @@ namespace Ai2Csproj
         /// Null if we can't determine the number of parameters;
         /// unsupported types will return null.
         /// </returns>
-        public static int? TryGetExectedNumberOfParameters( Type type )
+        public static int? TryGetExpectedNumberOfParameters( Type type )
         {
             if( type.Equals( typeof( AssemblySignatureKeyAttribute ) ))
             {
@@ -246,7 +247,7 @@ namespace Ai2Csproj
             }
             else if( supportedAssembliesMapping.Values.Contains( type ) )
             {
-                // All of our ither known attributes only allow one paramter.
+                // All of our other known attributes only allow one parameter.
                 // *Technically*, NeutralResourcesLanguageAttribute has a Constructor
                 // with 2 parameters, but it probably won't work at compile time
                 // since its an interface.

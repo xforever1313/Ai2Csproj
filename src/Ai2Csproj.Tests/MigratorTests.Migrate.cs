@@ -77,6 +77,9 @@ $@"<Project Sdk=""Microsoft.NET.Sdk"">
         <_Parameter1>{defaultPublicKey}</_Parameter1>
         <_Parameter2>{defaultCounterSignature}</_Parameter2>
     </AssemblyAttribute>
+    <AssemblyAttribute Include=""System.Reflection.AssemblyCultureAttribute"">
+        <_Parameter1>{defaultCulture}</_Parameter1>
+    </AssemblyAttribute>
   </ItemGroup>
 </Project>";
 
@@ -522,6 +525,45 @@ $@"<Project Sdk=""Microsoft.NET.Sdk"">
 
             // Act / Check
             DoMigrationTest(
+                config,
+                originalCsProj,
+                originalAssemblyInfo,
+                expectedCsProj,
+                ""
+            );
+        }
+
+        [TestMethod]
+        public void ClsCompliantTest()
+        {
+            // Setup
+            const string originalCsProj =
+@"<Project Sdk=""Microsoft.NET.Sdk"">
+</Project>
+";
+            
+            const string originalAssemblyInfo =
+@"using System;
+
+[assembly: CLSCompliant(true)]
+";
+
+            const string expectedCsProj =
+@"<Project Sdk=""Microsoft.NET.Sdk"">
+  <ItemGroup>
+    <AssemblyAttribute Include=""System.CLSCompliantAttribute"">
+        <_Parameter1>true</_Parameter1>
+    </AssemblyAttribute>
+  </ItemGroup>
+</Project>
+";
+            var config = new Ai2CsprojConfig
+            {
+                DeleteOldAssemblyInfo = true,                
+            };
+
+            // Act / Check
+            CommonTests.DoMigrationTest(
                 config,
                 originalCsProj,
                 originalAssemblyInfo,

@@ -93,6 +93,10 @@ namespace Ai2Csproj
                                 {
                                     text = litExpression.Token.ValueText;
                                 }
+                                else
+                                {
+                                    text = expression.ToString();
+                                }
                             }
                             else
                             {

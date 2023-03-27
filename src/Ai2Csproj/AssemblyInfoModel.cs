@@ -61,7 +61,7 @@ namespace Ai2Csproj
                 }
             }
 
-            int? expectedArgs = AssemblyAttributeMapping.TryGetExectedNumberOfParameters( type );
+            int? expectedArgs = AssemblyAttributeMapping.TryGetExpectedNumberOfParameters( type );
             if( expectedArgs is not null )
             {
                 if( parameters.Count() != expectedArgs )

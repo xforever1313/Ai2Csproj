@@ -41,6 +41,8 @@ namespace Ai2Csproj.Tests
         private const string defaultPublicKey = "publicKey";
         private const string defaultCounterSignature = "somecountersignature";
 
+        private const string defaultCulture = "en-US";
+
         private const string defaultStartingCsProj =
 $@"<Project Sdk=""Microsoft.NET.Sdk"">
 
@@ -176,6 +178,7 @@ using System.Runtime.InteropServices;
 [assembly: {reflectionNamespace}AssemblyKeyFile{suffixString}( ""{defaultKeyFile}"" )]
 [assembly: {reflectionNamespace}AssemblyKeyName{suffixString}( ""{defaultKeyName}"" )]
 [assembly: {reflectionNamespace}AssemblySignatureKey{suffixString}( ""{defaultPublicKey}"", ""{defaultCounterSignature}"" )]
+[assembly: {reflectionNamespace}AssemblyCulture{suffixString}( ""{defaultCulture}"" )]
 ";
         }
     }

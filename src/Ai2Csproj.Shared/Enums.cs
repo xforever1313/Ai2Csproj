@@ -101,6 +101,8 @@ namespace Ai2Csproj.Shared
 
         assembly_key_name = ( 2L << 17 ),
 
-        assembly_signature_key = ( 2L << 18 )
+        assembly_signature_key = ( 2L << 18 ),
+
+        assembly_culture = ( 2L << 19 )
     }
 }
