@@ -20,7 +20,7 @@ Supported types have the benefit of you being able to specify how ai2csproj hand
 * ```delete``` - Delete this attribute type from the AssemblyInfo file and _do not_ move it to the csproj (in other words, delete the attribute completely from the assembly).
 * ```leave``` - Do not migrate the attribute to the csproj file, and leave it inside of AssemblyInfo.cs.
 
-Unsupported types can still be migrated just fine; but by default they are left alone.  Simply pass in ```--migrate_unsupported_types``` on the command line to migrate _all_ unsupported types (its all or nothing).
+Unsupported types can still be migrated just fine; but by default they are left alone.  Simply pass in ```--migrate_unsupported_types``` on the command line to migrate _all_ unsupported types (its all or nothing).  This should be used with some caution, its possible for the tool to migrate the attributes over, but the end-result is a project that does not compile.
 
 ### Version Sources
 
@@ -50,3 +50,4 @@ Note that if a ```--version_source``` is specified, the attribute that it copied
 * If your AssemblyInfo.cs file has a syntax error, ai2csproj may or may not work.  Make sure your project compiles before running ai2csproj.
 * When using a version source that copies from AssemblyVersion or FileVersion, the attribute's values are copied _exactly_, even if the value is invalid for the ```<Version>``` property.
 * This tool doesn't work great with preprocessor defines.  Whatever attribute is excluded from the preprocessor will be removed completely when the tool is run.  Someday, it may be nice to somehow reconstruct the preprocessor logic in the .csproj, but that's not supported right now.
+* If you have a custom Assembly Attribute that contains an enum for a parameter, it will get migrated over to the .csproj, but the end result may be a project that does not compile.  If you have a custom Assembly Attribute that has an enum as an input, it is recommended to make sure the ```--migrate_unsupported_types``` is set to false (which is the default option).
