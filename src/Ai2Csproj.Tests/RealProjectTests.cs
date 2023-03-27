@@ -95,5 +95,74 @@ using System.Runtime.CompilerServices;
                 ""
             );
         }
+
+        [TestMethod]
+        public void TreeViewAdvTest()
+        {
+            // Setup
+            // Taken from here:
+            // https://raw.githubusercontent.com/AdamsLair/treeviewadv/master/Aga.Controls/Properties/AssemblyInfo.cs
+            const string originalAssemblyInfo =
+@"using System.Reflection;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+using System;
+using System.Security.Permissions;
+
+[assembly: ComVisible(false)]
+[assembly: CLSCompliant(false)]
+[assembly: SecurityPermission(SecurityAction.RequestMinimum, Execution = true)]
+
+[assembly: AssemblyTitle(""Aga.Controls"")]
+[assembly: AssemblyCopyright(""Copyright © Andrey Gliznetsov 2006 - 2009"")]
+[assembly: AssemblyDescription(""http://sourceforge.net/projects/treeviewadv/"")]
+
+[assembly: AssemblyVersion(""1.7.7"")]
+";
+            const string expectedCsProj =
+@"<Project Sdk=""Microsoft.NET.Sdk"">
+  <PropertyGroup>
+    <AssemblyTitle>Aga.Controls</AssemblyTitle>
+    <Copyright>Copyright © Andrey Gliznetsov 2006 - 2009</Copyright>
+    <Description>http://sourceforge.net/projects/treeviewadv/</Description>
+    <AssemblyVersion>1.7.7</AssemblyVersion>
+  </PropertyGroup>
+  <ItemGroup>
+    <AssemblyAttribute Include=""System.Runtime.InteropServices.ComVisibleAttribute"">
+        <_Parameter1>false</_Parameter1>
+    </AssemblyAttribute>
+    <AssemblyAttribute Include=""System.CLSCompliantAttribute"">
+        <_Parameter1>false</_Parameter1>
+    </AssemblyAttribute>
+  </ItemGroup>
+</Project>
+";
+
+            const string expectedAssemblyInfo =
+@"using System.Reflection;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+using System;
+using System.Security.Permissions;
+[assembly: SecurityPermission(SecurityAction.RequestMinimum, Execution = true)]
+";
+
+            var config = new Ai2CsprojConfig
+            {
+                DeleteOldAssemblyInfo = true,
+                // Set to false since we don't support SecurityPermissions
+                // at all.
+                MigrateUnsupportedTypes = false
+            };
+
+            // Act / Check
+            CommonTests.DoMigrationTest(
+                config,
+                defaultOriginalCsProj,
+                originalAssemblyInfo,
+                expectedCsProj,
+                expectedAssemblyInfo
+            );
+        }
     }
 }
