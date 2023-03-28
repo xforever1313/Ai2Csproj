@@ -4,7 +4,7 @@ AssemblyInfo to csproj (ai2csproj) is a tool that can be used to migrate all Ass
 
 ## Installation
 
-This can be installed as a dotnet tool.  To install globally for your user, run ```dotnet tool install -g ai2csproj```.
+This can be installed as a dotnet tool.  To install globally for your user, run ```dotnet tool install -g ai2csproj.tool```.
 
 ## Usage
 
