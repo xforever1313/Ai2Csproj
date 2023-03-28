@@ -21,7 +21,7 @@ namespace Ai2Csproj.Tests
     {
         // ---------------- Functions ----------------
 
-        public static void DoMigrationTest(
+        public static MigrationResult DoMigrationTest(
             Ai2CsprojConfig config,
             string startingCsProj,
             string startingAssemblyInfo,
@@ -37,6 +37,8 @@ namespace Ai2Csproj.Tests
 
             Assert.AreEqual( expectedCsProjXml.ToString(), actualCsProjXml.ToString() );
             Assert.AreEqual( expectedAssemblyInfo, result.AssemblyInfoContents );
+
+            return result;
         }
     }
 }

@@ -113,7 +113,7 @@ namespace Ai2Csproj.Tests
         }
 
         [TestMethod]
-        public void LeaveOnlyCopyrightAttributesTest()
+        public void LeaveOnlyCopyrightAndTrademarkAttributesTest()
         {
             // Setup
             const string originalCsProj =
@@ -154,6 +154,11 @@ $@"<Project Sdk=""Microsoft.NET.Sdk"">
     <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
     <GenerateNeutralResourcesLanguageAttribute>false</GenerateNeutralResourcesLanguageAttribute>
   </PropertyGroup>
+  <ItemGroup>
+    <AssemblyAttribute Include=""System.Reflection.AssemblyTrademarkAttribute"">
+        <_Parameter1>{defaultTrademark}</_Parameter1>
+    </AssemblyAttribute>
+  </ItemGroup>
 </Project>
 ";
             string expectedAssemblyInfo = GetDefaultStartingAssemblyInfo( false, false );
@@ -161,17 +166,26 @@ $@"<Project Sdk=""Microsoft.NET.Sdk"">
                 $@"[assembly: AssemblyCopyright( ""{defaultCopyRight}"" )]{Environment.NewLine}",
                 ""
             );
+            expectedAssemblyInfo = expectedAssemblyInfo.Replace(
+                $@"{Environment.NewLine}[assembly: AssemblyTrademark( ""{defaultTrademark}"" )]{Environment.NewLine}",
+                ""
+            );
 
-            var config = GetConfigWithAllLeave( SupportedAssemblyAttributes.assembly_copyright );
+            var config = GetConfigWithAllLeave(
+                SupportedAssemblyAttributes.assembly_copyright | 
+                SupportedAssemblyAttributes.assembly_trademark
+            );
 
-            // Act / Check
-            DoMigrationTest(
+            // Act
+            MigrationResult result = DoMigrationTest(
                 config,
                 originalCsProj,
                 defaultStartingAssemblyInfo,
                 expectedCsProj,
                 expectedAssemblyInfo
             );
+
+            Assert.IsFalse( result.CsprojContents.Contains( "xmlns" ) );
         }
     }
 }

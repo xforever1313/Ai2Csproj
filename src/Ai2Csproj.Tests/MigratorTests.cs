@@ -69,7 +69,7 @@ $@"<Project Sdk=""Microsoft.NET.Sdk"">
 
         // ---------------- Test Helpers ----------------
 
-        private static void DoMigrationTest(
+        private static MigrationResult DoMigrationTest(
             Ai2CsprojConfig config,
             string startingCsProj,
             string startingAssemblyInfo,
@@ -77,7 +77,7 @@ $@"<Project Sdk=""Microsoft.NET.Sdk"">
             string expectedAssemblyInfo
         )
         {
-            CommonTests.DoMigrationTest(
+            return CommonTests.DoMigrationTest(
                 config,
                 startingCsProj,
                 startingAssemblyInfo,
@@ -93,7 +93,7 @@ $@"<Project Sdk=""Microsoft.NET.Sdk"">
             {
                 if( excludedValues is not null )
                 {
-                    if( ( excludedValues & type ) == excludedValues )
+                    if( ( excludedValues & type ) == type )
                     {
                         continue;
                     }
@@ -111,7 +111,7 @@ $@"<Project Sdk=""Microsoft.NET.Sdk"">
             {
                 if( excludedValues is not null )
                 {
-                    if( ( excludedValues & type ) == excludedValues )
+                    if( ( excludedValues & type ) == type )
                     {
                         continue;
                     }
@@ -129,7 +129,7 @@ $@"<Project Sdk=""Microsoft.NET.Sdk"">
             {
                 if( excludedValues is not null )
                 {
-                    if( ( excludedValues & type ) == excludedValues )
+                    if( ( excludedValues & type ) == type )
                     {
                         continue;
                     }
