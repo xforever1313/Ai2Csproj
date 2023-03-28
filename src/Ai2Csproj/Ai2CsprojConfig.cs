@@ -27,7 +27,7 @@ namespace Ai2Csproj
         public bool DeleteBackup { get; init; } = false;
 
         public string CsProjPath { get; init; } =
-            $"{Environment.CurrentDirectory}.csproj";
+            $"{Path.GetFileName( Environment.CurrentDirectory )}.csproj";
 
         public string AssmblyInfoPath { get; init; } = Path.Combine(
             Environment.CurrentDirectory,

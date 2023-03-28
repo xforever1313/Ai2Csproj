@@ -119,6 +119,57 @@ using System.Runtime.InteropServices;
             RunTest( testConfig );
         }
 
+        [TestMethod]
+        public void TestWithNoArguments()
+        {
+            const string expectedCsProj =
+$@"<Project Sdk=""Microsoft.NET.Sdk"">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <Copyright>{defaultCopyRight}</Copyright>
+    <AssemblyVersion>{defaultAssemblyVersion}</AssemblyVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <AssemblyAttribute Include=""System.Reflection.AssemblyTrademarkAttribute"">
+        <_Parameter1>{defaultTrademark}</_Parameter1>
+    </AssemblyAttribute>
+  </ItemGroup>
+</Project>
+";
+
+            const string expectedAssemblyInfo =
+@"using System.Reflection;
+using System.Resources;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+";
+
+            var testConfig = new TestConfig( nameof( TestWithNoArguments ) )
+            {
+                Arguments = new string[]
+                {
+                },
+                AutoSetFileArguments = false,
+                ExpectBackups = true,
+                OriginalCsProj = defaultOriginalCsProj,
+                OriginalAssemblyInfo = defaultOriginalAssemblyInfo,
+                ExpectedCsProj = expectedCsProj,
+                ExpectedAssemblyInfo = expectedAssemblyInfo,
+                ExpectedExitCode = 0,
+                EnterWorkingDirectory = true
+            };
+
+            RunTest( testConfig );
+        }
+
         /// <summary>
         /// Default settings include:
         /// - Everything is migrated.
@@ -956,14 +1007,32 @@ using System.Runtime.InteropServices;
                 File.WriteAllText( csProj.FullName, config.OriginalCsProj );
                 File.WriteAllText( assemblyInfo.FullName, config.OriginalAssemblyInfo );
 
-                var arguments = new List<string>( config.Arguments )
+                var arguments = new List<string>( config.Arguments );
+                if( config.AutoSetFileArguments )
                 {
-                    $@"--project_path={csProj.FullName}",
-                    $@"--assembly_info_path={assemblyInfo.FullName}"
+                    arguments.Add( $@"--project_path={csProj.FullName}" );
+                    arguments.Add( $@"--assembly_info_path={assemblyInfo.FullName}" );
                 };
 
                 // Act
-                int exitCode = Program.Main( arguments.ToArray() );
+                int exitCode;
+                string? originalPath = null;
+                try
+                {
+                    if( config.EnterWorkingDirectory )
+                    {
+                        originalPath = Environment.CurrentDirectory;
+                        Environment.CurrentDirectory = directory.FullName;
+                    }
+                    exitCode = Program.Main( arguments.ToArray() );
+                }
+                finally
+                {
+                    if( originalPath is not null )
+                    {
+                        Environment.CurrentDirectory = originalPath;
+                    }
+                }
 
                 // Check
                 Assert.AreEqual( config.ExpectedExitCode, exitCode );
@@ -1034,6 +1103,10 @@ using System.Runtime.InteropServices;
             }
 
             // ---------------- Properties ----------------
+
+            public bool AutoSetFileArguments { get; init; } = true;
+
+            public bool EnterWorkingDirectory { get; init; } = false;
 
             public string TestName { get; private set; }
 
