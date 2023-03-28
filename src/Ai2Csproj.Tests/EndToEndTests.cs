@@ -1057,6 +1057,10 @@ using System.Runtime.InteropServices;
                 XDocument actualCsProjXml = XDocument.Load( csProj.FullName );
                 Assert.AreEqual( expectedCsProjXml.ToString(), actualCsProjXml.ToString() );
 
+                string csProjContents = File.ReadAllText( csProj.FullName );
+                Console.WriteLine(csProjContents);
+                Assert.IsFalse( csProjContents.Contains( "xmlns" ) );
+
                 if( config.ExpectedAssemblyInfo is null )
                 {
                     Assert.IsFalse( assemblyInfo.Exists );

@@ -176,16 +176,14 @@ $@"<Project Sdk=""Microsoft.NET.Sdk"">
                 SupportedAssemblyAttributes.assembly_trademark
             );
 
-            // Act
-            MigrationResult result = DoMigrationTest(
+            // Act / Check
+            DoMigrationTest(
                 config,
                 originalCsProj,
                 defaultStartingAssemblyInfo,
                 expectedCsProj,
                 expectedAssemblyInfo
             );
-
-            Assert.IsFalse( result.CsprojContents.Contains( "xmlns" ) );
         }
     }
 }
